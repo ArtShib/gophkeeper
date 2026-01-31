@@ -1,0 +1,30 @@
+edition = "2023";
+
+package keeper.v1;
+
+option go_package = "github.com/ArtShib/gophkeeper/gen/go/keeper/v1;keeperv1";
+
+service AuthService {
+  rpc Register(RegisterRequest) returns (RegisterResponse);
+  rpc Login(LoginRequest) returns (LoginResponse);
+}
+
+message RegisterRequest {
+  string login = 1;
+  string password_hash = 2;
+}
+
+message RegisterResponse {
+  string user_id = 1;
+}
+
+message LoginRequest {
+  string login = 1;
+  string password_hash = 2;
+}
+
+message LoginResponse {
+  string access_token = 1;
+}
+
+
