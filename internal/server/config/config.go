@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/ArtShib/gophkeeper/internal/lib/loghelper"
-	"github.com/ArtShib/gophkeeper/internal/models"
+	"github.com/ArtShib/gophkeeper/internal/server/models"
 	"github.com/caarlos0/env"
 	"github.com/joho/godotenv"
 )

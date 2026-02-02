@@ -3,7 +3,7 @@ package secret
 import (
 	"context"
 
-	"github.com/ArtShib/gophkeeper/internal/models"
+	"github.com/ArtShib/gophkeeper/internal/server/models"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
