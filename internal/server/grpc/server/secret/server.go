@@ -4,7 +4,7 @@ import (
 	"context"
 
 	keeperv1 "github.com/ArtShib/gophkeeper/gen/go/keeper/v1"
-	"github.com/ArtShib/gophkeeper/internal/server/models"
+	"github.com/ArtShib/gophkeeper/internal/models"
 )
 
 type KeeperService interface {

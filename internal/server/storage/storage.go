@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ArtShib/gophkeeper/internal/server/models"
+	"github.com/ArtShib/gophkeeper/internal/models"
 	"github.com/ArtShib/gophkeeper/internal/server/storage/postgres"
 )
 

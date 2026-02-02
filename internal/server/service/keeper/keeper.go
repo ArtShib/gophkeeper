@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/ArtShib/gophkeeper/internal/lib/loghelper"
-	"github.com/ArtShib/gophkeeper/internal/server/models"
+	"github.com/ArtShib/gophkeeper/internal/models"
 )
 
 type StoreKeeper interface {

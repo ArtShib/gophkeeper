@@ -3,7 +3,7 @@ package interceptors
 import (
 	"context"
 
-	"github.com/ArtShib/gophkeeper/internal/server/models"
+	"github.com/ArtShib/gophkeeper/internal/models"
 	"github.com/ArtShib/gophkeeper/internal/server/service/auth"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
