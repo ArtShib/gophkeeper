@@ -133,7 +133,7 @@ func (b0 RegisterRequest_builder) Build() *RegisterRequest {
 
 type RegisterResponse struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_UserId      *string                `protobuf:"bytes,1,opt,name=user_id,json=userId"`
+	xxx_hidden_UserId      int64                  `protobuf:"varint,1,opt,name=user_id,json=userId"`
 	XXX_raceDetectHookData protoimpl.RaceDetectHookData
 	XXX_presence           [1]uint32
 	unknownFields          protoimpl.UnknownFields
@@ -165,18 +165,15 @@ func (x *RegisterResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *RegisterResponse) GetUserId() string {
+func (x *RegisterResponse) GetUserId() int64 {
 	if x != nil {
-		if x.xxx_hidden_UserId != nil {
-			return *x.xxx_hidden_UserId
-		}
-		return ""
+		return x.xxx_hidden_UserId
 	}
-	return ""
+	return 0
 }
 
-func (x *RegisterResponse) SetUserId(v string) {
-	x.xxx_hidden_UserId = &v
+func (x *RegisterResponse) SetUserId(v int64) {
+	x.xxx_hidden_UserId = v
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
 }
 
@@ -189,13 +186,13 @@ func (x *RegisterResponse) HasUserId() bool {
 
 func (x *RegisterResponse) ClearUserId() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_UserId = nil
+	x.xxx_hidden_UserId = 0
 }
 
 type RegisterResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	UserId *string
+	UserId *int64
 }
 
 func (b0 RegisterResponse_builder) Build() *RegisterResponse {
@@ -204,7 +201,7 @@ func (b0 RegisterResponse_builder) Build() *RegisterResponse {
 	_, _ = b, x
 	if b.UserId != nil {
 		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
-		x.xxx_hidden_UserId = b.UserId
+		x.xxx_hidden_UserId = *b.UserId
 	}
 	return m0
 }
@@ -407,7 +404,7 @@ const file_keeper_v1_auth_proto_rawDesc = "" +
 	"\x05login\x18\x01 \x01(\tR\x05login\x12#\n" +
 	"\rpassword_hash\x18\x02 \x01(\tR\fpasswordHash\"+\n" +
 	"\x10RegisterResponse\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\tR\x06userId\"I\n" +
+	"\auser_id\x18\x01 \x01(\x03R\x06userId\"I\n" +
 	"\fLoginRequest\x12\x14\n" +
 	"\x05login\x18\x01 \x01(\tR\x05login\x12#\n" +
 	"\rpassword_hash\x18\x02 \x01(\tR\fpasswordHash\"2\n" +

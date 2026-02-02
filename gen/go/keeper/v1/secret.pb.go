@@ -10,7 +10,6 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
-	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	unsafe "unsafe"
 )
@@ -22,14 +21,13 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Модель Секрета (то, как он ходит по сети)
 type Secret struct {
 	state                    protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Id            *string                `protobuf:"bytes,1,opt,name=id"`
 	xxx_hidden_Meta          *SecretMetadata        `protobuf:"bytes,2,opt,name=meta"`
 	xxx_hidden_EncryptedData []byte                 `protobuf:"bytes,3,opt,name=encrypted_data,json=encryptedData"`
-	xxx_hidden_CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=created_at,json=createdAt"`
-	xxx_hidden_UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=updated_at,json=updatedAt"`
+	xxx_hidden_CreatedAt     int64                  `protobuf:"varint,4,opt,name=created_at,json=createdAt"`
+	xxx_hidden_UpdatedAt     int64                  `protobuf:"varint,5,opt,name=updated_at,json=updatedAt"`
 	xxx_hidden_IsDeleted     bool                   `protobuf:"varint,6,opt,name=is_deleted,json=isDeleted"`
 	XXX_raceDetectHookData   protoimpl.RaceDetectHookData
 	XXX_presence             [1]uint32
@@ -86,18 +84,18 @@ func (x *Secret) GetEncryptedData() []byte {
 	return nil
 }
 
-func (x *Secret) GetCreatedAt() *timestamppb.Timestamp {
+func (x *Secret) GetCreatedAt() int64 {
 	if x != nil {
 		return x.xxx_hidden_CreatedAt
 	}
-	return nil
+	return 0
 }
 
-func (x *Secret) GetUpdatedAt() *timestamppb.Timestamp {
+func (x *Secret) GetUpdatedAt() int64 {
 	if x != nil {
 		return x.xxx_hidden_UpdatedAt
 	}
-	return nil
+	return 0
 }
 
 func (x *Secret) GetIsDeleted() bool {
@@ -124,12 +122,14 @@ func (x *Secret) SetEncryptedData(v []byte) {
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 6)
 }
 
-func (x *Secret) SetCreatedAt(v *timestamppb.Timestamp) {
+func (x *Secret) SetCreatedAt(v int64) {
 	x.xxx_hidden_CreatedAt = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 6)
 }
 
-func (x *Secret) SetUpdatedAt(v *timestamppb.Timestamp) {
+func (x *Secret) SetUpdatedAt(v int64) {
 	x.xxx_hidden_UpdatedAt = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 6)
 }
 
 func (x *Secret) SetIsDeleted(v bool) {
@@ -162,14 +162,14 @@ func (x *Secret) HasCreatedAt() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_CreatedAt != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
 }
 
 func (x *Secret) HasUpdatedAt() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_UpdatedAt != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
 }
 
 func (x *Secret) HasIsDeleted() bool {
@@ -194,11 +194,13 @@ func (x *Secret) ClearEncryptedData() {
 }
 
 func (x *Secret) ClearCreatedAt() {
-	x.xxx_hidden_CreatedAt = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_CreatedAt = 0
 }
 
 func (x *Secret) ClearUpdatedAt() {
-	x.xxx_hidden_UpdatedAt = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_UpdatedAt = 0
 }
 
 func (x *Secret) ClearIsDeleted() {
@@ -212,8 +214,8 @@ type Secret_builder struct {
 	Id            *string
 	Meta          *SecretMetadata
 	EncryptedData []byte
-	CreatedAt     *timestamppb.Timestamp
-	UpdatedAt     *timestamppb.Timestamp
+	CreatedAt     *int64
+	UpdatedAt     *int64
 	IsDeleted     *bool
 }
 
@@ -230,8 +232,14 @@ func (b0 Secret_builder) Build() *Secret {
 		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 6)
 		x.xxx_hidden_EncryptedData = b.EncryptedData
 	}
-	x.xxx_hidden_CreatedAt = b.CreatedAt
-	x.xxx_hidden_UpdatedAt = b.UpdatedAt
+	if b.CreatedAt != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 6)
+		x.xxx_hidden_CreatedAt = *b.CreatedAt
+	}
+	if b.UpdatedAt != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 6)
+		x.xxx_hidden_UpdatedAt = *b.UpdatedAt
+	}
 	if b.IsDeleted != nil {
 		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 6)
 		x.xxx_hidden_IsDeleted = *b.IsDeleted
@@ -240,13 +248,10 @@ func (b0 Secret_builder) Build() *Secret {
 }
 
 type CreateSecretRequest struct {
-	state                    protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Meta          *SecretMetadata        `protobuf:"bytes,1,opt,name=meta"`
-	xxx_hidden_EncryptedData []byte                 `protobuf:"bytes,2,opt,name=encrypted_data,json=encryptedData"`
-	XXX_raceDetectHookData   protoimpl.RaceDetectHookData
-	XXX_presence             [1]uint32
-	unknownFields            protoimpl.UnknownFields
-	sizeCache                protoimpl.SizeCache
+	state             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Secret *Secret                `protobuf:"bytes,1,opt,name=secret"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *CreateSecretRequest) Reset() {
@@ -274,192 +279,39 @@ func (x *CreateSecretRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *CreateSecretRequest) GetMeta() *SecretMetadata {
+func (x *CreateSecretRequest) GetSecret() *Secret {
 	if x != nil {
-		return x.xxx_hidden_Meta
+		return x.xxx_hidden_Secret
 	}
 	return nil
 }
 
-func (x *CreateSecretRequest) GetEncryptedData() []byte {
-	if x != nil {
-		return x.xxx_hidden_EncryptedData
-	}
-	return nil
+func (x *CreateSecretRequest) SetSecret(v *Secret) {
+	x.xxx_hidden_Secret = v
 }
 
-func (x *CreateSecretRequest) SetMeta(v *SecretMetadata) {
-	x.xxx_hidden_Meta = v
-}
-
-func (x *CreateSecretRequest) SetEncryptedData(v []byte) {
-	if v == nil {
-		v = []byte{}
-	}
-	x.xxx_hidden_EncryptedData = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
-}
-
-func (x *CreateSecretRequest) HasMeta() bool {
+func (x *CreateSecretRequest) HasSecret() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_Meta != nil
+	return x.xxx_hidden_Secret != nil
 }
 
-func (x *CreateSecretRequest) HasEncryptedData() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
-}
-
-func (x *CreateSecretRequest) ClearMeta() {
-	x.xxx_hidden_Meta = nil
-}
-
-func (x *CreateSecretRequest) ClearEncryptedData() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_EncryptedData = nil
+func (x *CreateSecretRequest) ClearSecret() {
+	x.xxx_hidden_Secret = nil
 }
 
 type CreateSecretRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Meta          *SecretMetadata
-	EncryptedData []byte
+	Secret *Secret
 }
 
 func (b0 CreateSecretRequest_builder) Build() *CreateSecretRequest {
 	m0 := &CreateSecretRequest{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.xxx_hidden_Meta = b.Meta
-	if b.EncryptedData != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 2)
-		x.xxx_hidden_EncryptedData = b.EncryptedData
-	}
-	return m0
-}
-
-type CreateSecretResponse struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Id          *string                `protobuf:"bytes,1,opt,name=id"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
-}
-
-func (x *CreateSecretResponse) Reset() {
-	*x = CreateSecretResponse{}
-	mi := &file_keeper_v1_secret_proto_msgTypes[2]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CreateSecretResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CreateSecretResponse) ProtoMessage() {}
-
-func (x *CreateSecretResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_keeper_v1_secret_proto_msgTypes[2]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *CreateSecretResponse) GetId() string {
-	if x != nil {
-		if x.xxx_hidden_Id != nil {
-			return *x.xxx_hidden_Id
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *CreateSecretResponse) SetId(v string) {
-	x.xxx_hidden_Id = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
-}
-
-func (x *CreateSecretResponse) HasId() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
-}
-
-func (x *CreateSecretResponse) ClearId() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Id = nil
-}
-
-type CreateSecretResponse_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Id *string
-}
-
-func (b0 CreateSecretResponse_builder) Build() *CreateSecretResponse {
-	m0 := &CreateSecretResponse{}
-	b, x := &b0, m0
-	_, _ = b, x
-	if b.Id != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
-		x.xxx_hidden_Id = b.Id
-	}
-	return m0
-}
-
-type ListSecretsRequest struct {
-	state         protoimpl.MessageState `protogen:"opaque.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ListSecretsRequest) Reset() {
-	*x = ListSecretsRequest{}
-	mi := &file_keeper_v1_secret_proto_msgTypes[3]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ListSecretsRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ListSecretsRequest) ProtoMessage() {}
-
-func (x *ListSecretsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_keeper_v1_secret_proto_msgTypes[3]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-type ListSecretsRequest_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-}
-
-func (b0 ListSecretsRequest_builder) Build() *ListSecretsRequest {
-	m0 := &ListSecretsRequest{}
-	b, x := &b0, m0
-	_, _ = b, x
+	x.xxx_hidden_Secret = b.Secret
 	return m0
 }
 
@@ -472,7 +324,7 @@ type ListSecretsResponse struct {
 
 func (x *ListSecretsResponse) Reset() {
 	*x = ListSecretsResponse{}
-	mi := &file_keeper_v1_secret_proto_msgTypes[4]
+	mi := &file_keeper_v1_secret_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -484,7 +336,7 @@ func (x *ListSecretsResponse) String() string {
 func (*ListSecretsResponse) ProtoMessage() {}
 
 func (x *ListSecretsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_keeper_v1_secret_proto_msgTypes[4]
+	mi := &file_keeper_v1_secret_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -523,19 +375,15 @@ func (b0 ListSecretsResponse_builder) Build() *ListSecretsResponse {
 }
 
 type UpdateSecretRequest struct {
-	state                    protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Id            *string                `protobuf:"bytes,1,opt,name=id"`
-	xxx_hidden_Meta          *SecretMetadata        `protobuf:"bytes,2,opt,name=meta"`
-	xxx_hidden_EncryptedData []byte                 `protobuf:"bytes,3,opt,name=encrypted_data,json=encryptedData"`
-	XXX_raceDetectHookData   protoimpl.RaceDetectHookData
-	XXX_presence             [1]uint32
-	unknownFields            protoimpl.UnknownFields
-	sizeCache                protoimpl.SizeCache
+	state             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Secret *Secret                `protobuf:"bytes,1,opt,name=secret"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *UpdateSecretRequest) Reset() {
 	*x = UpdateSecretRequest{}
-	mi := &file_keeper_v1_secret_proto_msgTypes[5]
+	mi := &file_keeper_v1_secret_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -547,7 +395,7 @@ func (x *UpdateSecretRequest) String() string {
 func (*UpdateSecretRequest) ProtoMessage() {}
 
 func (x *UpdateSecretRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_keeper_v1_secret_proto_msgTypes[5]
+	mi := &file_keeper_v1_secret_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -558,109 +406,46 @@ func (x *UpdateSecretRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *UpdateSecretRequest) GetId() string {
+func (x *UpdateSecretRequest) GetSecret() *Secret {
 	if x != nil {
-		if x.xxx_hidden_Id != nil {
-			return *x.xxx_hidden_Id
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *UpdateSecretRequest) GetMeta() *SecretMetadata {
-	if x != nil {
-		return x.xxx_hidden_Meta
+		return x.xxx_hidden_Secret
 	}
 	return nil
 }
 
-func (x *UpdateSecretRequest) GetEncryptedData() []byte {
-	if x != nil {
-		return x.xxx_hidden_EncryptedData
-	}
-	return nil
+func (x *UpdateSecretRequest) SetSecret(v *Secret) {
+	x.xxx_hidden_Secret = v
 }
 
-func (x *UpdateSecretRequest) SetId(v string) {
-	x.xxx_hidden_Id = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
-}
-
-func (x *UpdateSecretRequest) SetMeta(v *SecretMetadata) {
-	x.xxx_hidden_Meta = v
-}
-
-func (x *UpdateSecretRequest) SetEncryptedData(v []byte) {
-	if v == nil {
-		v = []byte{}
-	}
-	x.xxx_hidden_EncryptedData = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 3)
-}
-
-func (x *UpdateSecretRequest) HasId() bool {
+func (x *UpdateSecretRequest) HasSecret() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.xxx_hidden_Secret != nil
 }
 
-func (x *UpdateSecretRequest) HasMeta() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Meta != nil
-}
-
-func (x *UpdateSecretRequest) HasEncryptedData() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
-}
-
-func (x *UpdateSecretRequest) ClearId() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Id = nil
-}
-
-func (x *UpdateSecretRequest) ClearMeta() {
-	x.xxx_hidden_Meta = nil
-}
-
-func (x *UpdateSecretRequest) ClearEncryptedData() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_EncryptedData = nil
+func (x *UpdateSecretRequest) ClearSecret() {
+	x.xxx_hidden_Secret = nil
 }
 
 type UpdateSecretRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Id            *string
-	Meta          *SecretMetadata
-	EncryptedData []byte
+	Secret *Secret
 }
 
 func (b0 UpdateSecretRequest_builder) Build() *UpdateSecretRequest {
 	m0 := &UpdateSecretRequest{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.Id != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
-		x.xxx_hidden_Id = b.Id
-	}
-	x.xxx_hidden_Meta = b.Meta
-	if b.EncryptedData != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 3)
-		x.xxx_hidden_EncryptedData = b.EncryptedData
-	}
+	x.xxx_hidden_Secret = b.Secret
 	return m0
 }
 
 type DeleteSecretRequest struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Id          *string                `protobuf:"bytes,1,opt,name=id"`
+	xxx_hidden_UpdatedAt   int64                  `protobuf:"varint,2,opt,name=updated_at,json=updatedAt"`
 	XXX_raceDetectHookData protoimpl.RaceDetectHookData
 	XXX_presence           [1]uint32
 	unknownFields          protoimpl.UnknownFields
@@ -669,7 +454,7 @@ type DeleteSecretRequest struct {
 
 func (x *DeleteSecretRequest) Reset() {
 	*x = DeleteSecretRequest{}
-	mi := &file_keeper_v1_secret_proto_msgTypes[6]
+	mi := &file_keeper_v1_secret_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -681,7 +466,7 @@ func (x *DeleteSecretRequest) String() string {
 func (*DeleteSecretRequest) ProtoMessage() {}
 
 func (x *DeleteSecretRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_keeper_v1_secret_proto_msgTypes[6]
+	mi := &file_keeper_v1_secret_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -702,9 +487,21 @@ func (x *DeleteSecretRequest) GetId() string {
 	return ""
 }
 
+func (x *DeleteSecretRequest) GetUpdatedAt() int64 {
+	if x != nil {
+		return x.xxx_hidden_UpdatedAt
+	}
+	return 0
+}
+
 func (x *DeleteSecretRequest) SetId(v string) {
 	x.xxx_hidden_Id = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
+}
+
+func (x *DeleteSecretRequest) SetUpdatedAt(v int64) {
+	x.xxx_hidden_UpdatedAt = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
 }
 
 func (x *DeleteSecretRequest) HasId() bool {
@@ -714,15 +511,28 @@ func (x *DeleteSecretRequest) HasId() bool {
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
+func (x *DeleteSecretRequest) HasUpdatedAt() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
 func (x *DeleteSecretRequest) ClearId() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Id = nil
 }
 
+func (x *DeleteSecretRequest) ClearUpdatedAt() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_UpdatedAt = 0
+}
+
 type DeleteSecretRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Id *string
+	Id        *string
+	UpdatedAt *int64
 }
 
 func (b0 DeleteSecretRequest_builder) Build() *DeleteSecretRequest {
@@ -730,8 +540,12 @@ func (b0 DeleteSecretRequest_builder) Build() *DeleteSecretRequest {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Id != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
 		x.xxx_hidden_Id = b.Id
+	}
+	if b.UpdatedAt != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 2)
+		x.xxx_hidden_UpdatedAt = *b.UpdatedAt
 	}
 	return m0
 }
@@ -740,70 +554,61 @@ var File_keeper_v1_secret_proto protoreflect.FileDescriptor
 
 const file_keeper_v1_secret_proto_rawDesc = "" +
 	"\n" +
-	"\x16keeper/v1/secret.proto\x12\tkeeper.v1\x1a\x16keeper/v1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bgoogle/protobuf/empty.proto\"\x83\x02\n" +
+	"\x16keeper/v1/secret.proto\x12\tkeeper.v1\x1a\x16keeper/v1/common.proto\x1a\x1bgoogle/protobuf/empty.proto\"\xcb\x01\n" +
 	"\x06Secret\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12-\n" +
 	"\x04meta\x18\x02 \x01(\v2\x19.keeper.v1.SecretMetadataR\x04meta\x12%\n" +
-	"\x0eencrypted_data\x18\x03 \x01(\fR\rencryptedData\x129\n" +
+	"\x0eencrypted_data\x18\x03 \x01(\fR\rencryptedData\x12\x1d\n" +
 	"\n" +
-	"created_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
+	"created_at\x18\x04 \x01(\x03R\tcreatedAt\x12\x1d\n" +
 	"\n" +
-	"updated_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x12\x1d\n" +
+	"updated_at\x18\x05 \x01(\x03R\tupdatedAt\x12\x1d\n" +
 	"\n" +
-	"is_deleted\x18\x06 \x01(\bR\tisDeleted\"k\n" +
-	"\x13CreateSecretRequest\x12-\n" +
-	"\x04meta\x18\x01 \x01(\v2\x19.keeper.v1.SecretMetadataR\x04meta\x12%\n" +
-	"\x0eencrypted_data\x18\x02 \x01(\fR\rencryptedData\"&\n" +
-	"\x14CreateSecretResponse\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\"\x14\n" +
-	"\x12ListSecretsRequest\"B\n" +
+	"is_deleted\x18\x06 \x01(\bR\tisDeleted\"@\n" +
+	"\x13CreateSecretRequest\x12)\n" +
+	"\x06secret\x18\x01 \x01(\v2\x11.keeper.v1.SecretR\x06secret\"B\n" +
 	"\x13ListSecretsResponse\x12+\n" +
-	"\asecrets\x18\x01 \x03(\v2\x11.keeper.v1.SecretR\asecrets\"{\n" +
-	"\x13UpdateSecretRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12-\n" +
-	"\x04meta\x18\x02 \x01(\v2\x19.keeper.v1.SecretMetadataR\x04meta\x12%\n" +
-	"\x0eencrypted_data\x18\x03 \x01(\fR\rencryptedData\"%\n" +
+	"\asecrets\x18\x01 \x03(\v2\x11.keeper.v1.SecretR\asecrets\"@\n" +
+	"\x13UpdateSecretRequest\x12)\n" +
+	"\x06secret\x18\x01 \x01(\v2\x11.keeper.v1.SecretR\x06secret\"D\n" +
 	"\x13DeleteSecretRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id2\xbe\x02\n" +
-	"\rSecretService\x12O\n" +
-	"\fCreateSecret\x12\x1e.keeper.v1.CreateSecretRequest\x1a\x1f.keeper.v1.CreateSecretResponse\x12L\n" +
-	"\vListSecrets\x12\x1d.keeper.v1.ListSecretsRequest\x1a\x1e.keeper.v1.ListSecretsResponse\x12F\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1d\n" +
+	"\n" +
+	"updated_at\x18\x02 \x01(\x03R\tupdatedAt2\xae\x02\n" +
+	"\rSecretService\x12F\n" +
+	"\fCreateSecret\x12\x1e.keeper.v1.CreateSecretRequest\x1a\x16.google.protobuf.Empty\x12E\n" +
+	"\vListSecrets\x12\x16.google.protobuf.Empty\x1a\x1e.keeper.v1.ListSecretsResponse\x12F\n" +
 	"\fUpdateSecret\x12\x1e.keeper.v1.UpdateSecretRequest\x1a\x16.google.protobuf.Empty\x12F\n" +
 	"\fDeleteSecret\x12\x1e.keeper.v1.DeleteSecretRequest\x1a\x16.google.protobuf.EmptyB9Z7github.com/ArtShib/gophkeeper/gen/go/keeper/v1;keeperv1b\beditionsp\xe8\a"
 
-var file_keeper_v1_secret_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_keeper_v1_secret_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_keeper_v1_secret_proto_goTypes = []any{
-	(*Secret)(nil),                // 0: keeper.v1.Secret
-	(*CreateSecretRequest)(nil),   // 1: keeper.v1.CreateSecretRequest
-	(*CreateSecretResponse)(nil),  // 2: keeper.v1.CreateSecretResponse
-	(*ListSecretsRequest)(nil),    // 3: keeper.v1.ListSecretsRequest
-	(*ListSecretsResponse)(nil),   // 4: keeper.v1.ListSecretsResponse
-	(*UpdateSecretRequest)(nil),   // 5: keeper.v1.UpdateSecretRequest
-	(*DeleteSecretRequest)(nil),   // 6: keeper.v1.DeleteSecretRequest
-	(*SecretMetadata)(nil),        // 7: keeper.v1.SecretMetadata
-	(*timestamppb.Timestamp)(nil), // 8: google.protobuf.Timestamp
-	(*emptypb.Empty)(nil),         // 9: google.protobuf.Empty
+	(*Secret)(nil),              // 0: keeper.v1.Secret
+	(*CreateSecretRequest)(nil), // 1: keeper.v1.CreateSecretRequest
+	(*ListSecretsResponse)(nil), // 2: keeper.v1.ListSecretsResponse
+	(*UpdateSecretRequest)(nil), // 3: keeper.v1.UpdateSecretRequest
+	(*DeleteSecretRequest)(nil), // 4: keeper.v1.DeleteSecretRequest
+	(*SecretMetadata)(nil),      // 5: keeper.v1.SecretMetadata
+	(*emptypb.Empty)(nil),       // 6: google.protobuf.Empty
 }
 var file_keeper_v1_secret_proto_depIdxs = []int32{
-	7,  // 0: keeper.v1.Secret.meta:type_name -> keeper.v1.SecretMetadata
-	8,  // 1: keeper.v1.Secret.created_at:type_name -> google.protobuf.Timestamp
-	8,  // 2: keeper.v1.Secret.updated_at:type_name -> google.protobuf.Timestamp
-	7,  // 3: keeper.v1.CreateSecretRequest.meta:type_name -> keeper.v1.SecretMetadata
-	0,  // 4: keeper.v1.ListSecretsResponse.secrets:type_name -> keeper.v1.Secret
-	7,  // 5: keeper.v1.UpdateSecretRequest.meta:type_name -> keeper.v1.SecretMetadata
-	1,  // 6: keeper.v1.SecretService.CreateSecret:input_type -> keeper.v1.CreateSecretRequest
-	3,  // 7: keeper.v1.SecretService.ListSecrets:input_type -> keeper.v1.ListSecretsRequest
-	5,  // 8: keeper.v1.SecretService.UpdateSecret:input_type -> keeper.v1.UpdateSecretRequest
-	6,  // 9: keeper.v1.SecretService.DeleteSecret:input_type -> keeper.v1.DeleteSecretRequest
-	2,  // 10: keeper.v1.SecretService.CreateSecret:output_type -> keeper.v1.CreateSecretResponse
-	4,  // 11: keeper.v1.SecretService.ListSecrets:output_type -> keeper.v1.ListSecretsResponse
-	9,  // 12: keeper.v1.SecretService.UpdateSecret:output_type -> google.protobuf.Empty
-	9,  // 13: keeper.v1.SecretService.DeleteSecret:output_type -> google.protobuf.Empty
-	10, // [10:14] is the sub-list for method output_type
-	6,  // [6:10] is the sub-list for method input_type
-	6,  // [6:6] is the sub-list for extension type_name
-	6,  // [6:6] is the sub-list for extension extendee
-	0,  // [0:6] is the sub-list for field type_name
+	5, // 0: keeper.v1.Secret.meta:type_name -> keeper.v1.SecretMetadata
+	0, // 1: keeper.v1.CreateSecretRequest.secret:type_name -> keeper.v1.Secret
+	0, // 2: keeper.v1.ListSecretsResponse.secrets:type_name -> keeper.v1.Secret
+	0, // 3: keeper.v1.UpdateSecretRequest.secret:type_name -> keeper.v1.Secret
+	1, // 4: keeper.v1.SecretService.CreateSecret:input_type -> keeper.v1.CreateSecretRequest
+	6, // 5: keeper.v1.SecretService.ListSecrets:input_type -> google.protobuf.Empty
+	3, // 6: keeper.v1.SecretService.UpdateSecret:input_type -> keeper.v1.UpdateSecretRequest
+	4, // 7: keeper.v1.SecretService.DeleteSecret:input_type -> keeper.v1.DeleteSecretRequest
+	6, // 8: keeper.v1.SecretService.CreateSecret:output_type -> google.protobuf.Empty
+	2, // 9: keeper.v1.SecretService.ListSecrets:output_type -> keeper.v1.ListSecretsResponse
+	6, // 10: keeper.v1.SecretService.UpdateSecret:output_type -> google.protobuf.Empty
+	6, // 11: keeper.v1.SecretService.DeleteSecret:output_type -> google.protobuf.Empty
+	8, // [8:12] is the sub-list for method output_type
+	4, // [4:8] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_keeper_v1_secret_proto_init() }
@@ -818,7 +623,7 @@ func file_keeper_v1_secret_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_keeper_v1_secret_proto_rawDesc), len(file_keeper_v1_secret_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   7,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -30,13 +30,9 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type SecretServiceClient interface {
-	// Добавить новый секрет
-	CreateSecret(ctx context.Context, in *CreateSecretRequest, opts ...grpc.CallOption) (*CreateSecretResponse, error)
-	// Получить список (только метаданные + encrypted blob)
-	ListSecrets(ctx context.Context, in *ListSecretsRequest, opts ...grpc.CallOption) (*ListSecretsResponse, error)
-	// Обновить секрет
+	CreateSecret(ctx context.Context, in *CreateSecretRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	ListSecrets(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ListSecretsResponse, error)
 	UpdateSecret(ctx context.Context, in *UpdateSecretRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// Удалить секрет
 	DeleteSecret(ctx context.Context, in *DeleteSecretRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
@@ -48,9 +44,9 @@ func NewSecretServiceClient(cc grpc.ClientConnInterface) SecretServiceClient {
 	return &secretServiceClient{cc}
 }
 
-func (c *secretServiceClient) CreateSecret(ctx context.Context, in *CreateSecretRequest, opts ...grpc.CallOption) (*CreateSecretResponse, error) {
+func (c *secretServiceClient) CreateSecret(ctx context.Context, in *CreateSecretRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CreateSecretResponse)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, SecretService_CreateSecret_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -58,7 +54,7 @@ func (c *secretServiceClient) CreateSecret(ctx context.Context, in *CreateSecret
 	return out, nil
 }
 
-func (c *secretServiceClient) ListSecrets(ctx context.Context, in *ListSecretsRequest, opts ...grpc.CallOption) (*ListSecretsResponse, error) {
+func (c *secretServiceClient) ListSecrets(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ListSecretsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListSecretsResponse)
 	err := c.cc.Invoke(ctx, SecretService_ListSecrets_FullMethodName, in, out, cOpts...)
@@ -92,13 +88,9 @@ func (c *secretServiceClient) DeleteSecret(ctx context.Context, in *DeleteSecret
 // All implementations must embed UnimplementedSecretServiceServer
 // for forward compatibility.
 type SecretServiceServer interface {
-	// Добавить новый секрет
-	CreateSecret(context.Context, *CreateSecretRequest) (*CreateSecretResponse, error)
-	// Получить список (только метаданные + encrypted blob)
-	ListSecrets(context.Context, *ListSecretsRequest) (*ListSecretsResponse, error)
-	// Обновить секрет
+	CreateSecret(context.Context, *CreateSecretRequest) (*emptypb.Empty, error)
+	ListSecrets(context.Context, *emptypb.Empty) (*ListSecretsResponse, error)
 	UpdateSecret(context.Context, *UpdateSecretRequest) (*emptypb.Empty, error)
-	// Удалить секрет
 	DeleteSecret(context.Context, *DeleteSecretRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedSecretServiceServer()
 }
@@ -110,10 +102,10 @@ type SecretServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedSecretServiceServer struct{}
 
-func (UnimplementedSecretServiceServer) CreateSecret(context.Context, *CreateSecretRequest) (*CreateSecretResponse, error) {
+func (UnimplementedSecretServiceServer) CreateSecret(context.Context, *CreateSecretRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreateSecret not implemented")
 }
-func (UnimplementedSecretServiceServer) ListSecrets(context.Context, *ListSecretsRequest) (*ListSecretsResponse, error) {
+func (UnimplementedSecretServiceServer) ListSecrets(context.Context, *emptypb.Empty) (*ListSecretsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListSecrets not implemented")
 }
 func (UnimplementedSecretServiceServer) UpdateSecret(context.Context, *UpdateSecretRequest) (*emptypb.Empty, error) {
@@ -162,7 +154,7 @@ func _SecretService_CreateSecret_Handler(srv interface{}, ctx context.Context, d
 }
 
 func _SecretService_ListSecrets_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListSecretsRequest)
+	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -174,7 +166,7 @@ func _SecretService_ListSecrets_Handler(srv interface{}, ctx context.Context, de
 		FullMethod: SecretService_ListSecrets_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SecretServiceServer).ListSecrets(ctx, req.(*ListSecretsRequest))
+		return srv.(SecretServiceServer).ListSecrets(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }

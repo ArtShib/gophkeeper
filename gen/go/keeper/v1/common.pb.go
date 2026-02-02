@@ -20,15 +20,14 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Типы секретов (для отображения иконок/фильтрации в UI)
 type SecretType int32
 
 const (
 	SecretType_SECRET_TYPE_UNSPECIFIED SecretType = 0
-	SecretType_SECRET_TYPE_CREDENTIALS SecretType = 1 // Логин + Пароль
-	SecretType_SECRET_TYPE_TEXT        SecretType = 2 // Текстовая заметка
-	SecretType_SECRET_TYPE_BINARY      SecretType = 3 // Бинарный файл
-	SecretType_SECRET_TYPE_CARD        SecretType = 4 // Банковская карта
+	SecretType_SECRET_TYPE_CREDENTIALS SecretType = 1
+	SecretType_SECRET_TYPE_TEXT        SecretType = 2
+	SecretType_SECRET_TYPE_BINARY      SecretType = 3
+	SecretType_SECRET_TYPE_CARD        SecretType = 4
 )
 
 // Enum value maps for SecretType.
@@ -71,7 +70,6 @@ func (x SecretType) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Метаданные (не зашифрованы, сервер может читать)
 type SecretMetadata struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Type        SecretType             `protobuf:"varint,1,opt,name=type,enum=keeper.v1.SecretType"`
