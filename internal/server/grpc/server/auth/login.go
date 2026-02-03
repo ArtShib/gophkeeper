@@ -5,7 +5,7 @@ import (
 	"errors"
 
 	keeperv1 "github.com/ArtShib/gophkeeper/gen/go/keeper/v1"
-	"github.com/ArtShib/gophkeeper/internal/models"
+	"github.com/ArtShib/gophkeeper/internal/server/models"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
