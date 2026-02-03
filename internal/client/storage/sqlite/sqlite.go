@@ -181,11 +181,11 @@ func (s *StoreSqlite) UpdateSecret(
 }
 
 // DeleteSecret установка признака удаления
-func (s *StoreSqlite) DeleteSecret(
+func (s *StoreSqlite) deleteSecret(
 	ctx context.Context,
 	secretID string,
 	ownerID int64) error {
-	const op = "storage.sqlite.DeleteSecret"
+	const op = "storage.sqlite.deleteSecret"
 	query := `
 			DELETE FROM secrets 
 			WHERE secret_id = ? AND user_id = ?`
@@ -225,7 +225,7 @@ func (s *StoreSqlite) MarkSynced(ctx context.Context,
 	status string) error {
 	const op = "storage.sqlite.MarkSynced"
 	if isDeleted {
-		return s.DeleteSecret(ctx, secretID, ownerID)
+		return s.deleteSecret(ctx, secretID, ownerID)
 	}
 
 	query := `

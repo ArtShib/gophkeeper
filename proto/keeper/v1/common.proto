@@ -2,7 +2,7 @@ edition = "2023";
 
 package keeper.v1;
 
-option go_package = "github.com/ArtShib/gophkeeper/gen/go/keeper/v1;keeperv1";
+option go_package = "github.com/ArtShib/gophkeeper/gen/go/secret/v1;keeperv1";
 
 enum SecretType {
   SECRET_TYPE_UNSPECIFIED = 0;

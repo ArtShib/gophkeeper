@@ -19,8 +19,8 @@ func AuthInterceptor(auth *auth.Auth) grpc.UnaryServerInterceptor {
 		handler grpc.UnaryHandler) (interface{}, error) {
 
 		switch info.FullMethod {
-		case "/keeper.v1.AuthService/Register",
-			"/keeper.v1.AuthService/Login":
+		case "/secret.v1.AuthService/Register",
+			"/secret.v1.AuthService/Login":
 			return handler(ctx, req)
 		}
 

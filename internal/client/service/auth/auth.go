@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"time"
 
+	"github.com/ArtShib/gophkeeper/internal/client/models"
 	"github.com/ArtShib/gophkeeper/internal/lib/jwt"
 	"github.com/ArtShib/gophkeeper/internal/lib/loghelper"
 	models2 "github.com/ArtShib/gophkeeper/internal/server/models"
@@ -12,30 +13,28 @@ import (
 )
 
 type StoreUser interface {
-	AddUser(ctx context.Context, login string, passHash []byte, createdAT int64) (*models2.User, error)
-	GetUser(ctx context.Context, login string) (*models2.User, error)
+	AddUser(ctx context.Context, id int64, login string, passHash []byte) error
+	GetUser(ctx context.Context, login string, passHash []byte) (*models.User, error)
 }
 
 type Auth struct {
-	log    *slog.Logger
-	store  StoreUser
-	config *models2.ConfigJWT
+	log   *slog.Logger
+	store StoreUser
 }
 
-func New(log *slog.Logger, store StoreUser, config *models2.ConfigJWT) *Auth {
+func New(log *slog.Logger, store StoreUser) *Auth {
 	return &Auth{
-		log:    log,
-		store:  store,
-		config: config,
+		log:   log,
+		store: store,
 	}
 }
 
-func (a *Auth) RegisterNewUser(ctx context.Context, login string, passHash string) (int64, error) {
+func (a *Auth) RegisterNewUser(ctx context.Context, id int64, login string, password string) error {
 	log := loghelper.New(a.log, "Auth.RegisterNewUser")
 
 	log.LogDebug(ctx, "register user", slog.String("login", login))
 
-	passHashSrv, err := bcrypt.GenerateFromPassword([]byte(passHash), bcrypt.DefaultCost)
+	passHashSrv, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return 0, log.LogAndReturnError(ctx, "bcrypt.GenerateFromPassword", err)
 	}

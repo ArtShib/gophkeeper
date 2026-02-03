@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        v6.33.4
-// source: keeper/v1/auth.proto
+// source: secret/v1/auth.proto
 
 package keeperv1
 
@@ -399,7 +399,7 @@ var File_keeper_v1_auth_proto protoreflect.FileDescriptor
 
 const file_keeper_v1_auth_proto_rawDesc = "" +
 	"\n" +
-	"\x14keeper/v1/auth.proto\x12\tkeeper.v1\"L\n" +
+	"\x14keeper/v1/auth.proto\x12\tsecret.v1\"L\n" +
 	"\x0fRegisterRequest\x12\x14\n" +
 	"\x05login\x18\x01 \x01(\tR\x05login\x12#\n" +
 	"\rpassword_hash\x18\x02 \x01(\tR\fpasswordHash\"+\n" +
@@ -411,21 +411,21 @@ const file_keeper_v1_auth_proto_rawDesc = "" +
 	"\rLoginResponse\x12!\n" +
 	"\faccess_token\x18\x01 \x01(\tR\vaccessToken2\x8e\x01\n" +
 	"\vAuthService\x12C\n" +
-	"\bRegister\x12\x1a.keeper.v1.RegisterRequest\x1a\x1b.keeper.v1.RegisterResponse\x12:\n" +
-	"\x05Login\x12\x17.keeper.v1.LoginRequest\x1a\x18.keeper.v1.LoginResponseB9Z7github.com/ArtShib/gophkeeper/gen/go/keeper/v1;keeperv1b\beditionsp\xe8\a"
+	"\bRegister\x12\x1a.secret.v1.RegisterRequest\x1a\x1b.secret.v1.RegisterResponse\x12:\n" +
+	"\x05Login\x12\x17.secret.v1.LoginRequest\x1a\x18.secret.v1.LoginResponseB9Z7github.com/ArtShib/gophkeeper/gen/go/secret/v1;keeperv1b\beditionsp\xe8\a"
 
 var file_keeper_v1_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_keeper_v1_auth_proto_goTypes = []any{
-	(*RegisterRequest)(nil),  // 0: keeper.v1.RegisterRequest
-	(*RegisterResponse)(nil), // 1: keeper.v1.RegisterResponse
-	(*LoginRequest)(nil),     // 2: keeper.v1.LoginRequest
-	(*LoginResponse)(nil),    // 3: keeper.v1.LoginResponse
+	(*RegisterRequest)(nil),  // 0: secret.v1.RegisterRequest
+	(*RegisterResponse)(nil), // 1: secret.v1.RegisterResponse
+	(*LoginRequest)(nil),     // 2: secret.v1.LoginRequest
+	(*LoginResponse)(nil),    // 3: secret.v1.LoginResponse
 }
 var file_keeper_v1_auth_proto_depIdxs = []int32{
-	0, // 0: keeper.v1.AuthService.Register:input_type -> keeper.v1.RegisterRequest
-	2, // 1: keeper.v1.AuthService.Login:input_type -> keeper.v1.LoginRequest
-	1, // 2: keeper.v1.AuthService.Register:output_type -> keeper.v1.RegisterResponse
-	3, // 3: keeper.v1.AuthService.Login:output_type -> keeper.v1.LoginResponse
+	0, // 0: secret.v1.AuthService.Register:input_type -> secret.v1.RegisterRequest
+	2, // 1: secret.v1.AuthService.Login:input_type -> secret.v1.LoginRequest
+	1, // 2: secret.v1.AuthService.Register:output_type -> secret.v1.RegisterResponse
+	3, // 3: secret.v1.AuthService.Login:output_type -> secret.v1.LoginResponse
 	2, // [2:4] is the sub-list for method output_type
 	0, // [0:2] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name

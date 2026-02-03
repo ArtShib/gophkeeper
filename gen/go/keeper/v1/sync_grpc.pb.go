@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.0
 // - protoc             v6.33.4
-// source: keeper/v1/sync.proto
+// source: secret/v1/sync.proto
 
 package keeperv1
 
@@ -19,7 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	SyncService_Sync_FullMethodName = "/keeper.v1.SyncService/Sync"
+	SyncService_Sync_FullMethodName = "/secret.v1.SyncService/Sync"
 )
 
 // SyncServiceClient is the client API for SyncService service.
@@ -108,7 +108,7 @@ func _SyncService_Sync_Handler(srv interface{}, ctx context.Context, dec func(in
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var SyncService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "keeper.v1.SyncService",
+	ServiceName: "secret.v1.SyncService",
 	HandlerType: (*SyncServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -117,5 +117,5 @@ var SyncService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "keeper/v1/sync.proto",
+	Metadata: "secret/v1/sync.proto",
 }

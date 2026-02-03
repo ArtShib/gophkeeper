@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        v6.33.4
-// source: keeper/v1/secret.proto
+// source: secret/v1/secret.proto
 
 package keeperv1
 
@@ -554,10 +554,10 @@ var File_keeper_v1_secret_proto protoreflect.FileDescriptor
 
 const file_keeper_v1_secret_proto_rawDesc = "" +
 	"\n" +
-	"\x16keeper/v1/secret.proto\x12\tkeeper.v1\x1a\x16keeper/v1/common.proto\x1a\x1bgoogle/protobuf/empty.proto\"\xcb\x01\n" +
+	"\x16keeper/v1/secret.proto\x12\tsecret.v1\x1a\x16keeper/v1/common.proto\x1a\x1bgoogle/protobuf/empty.proto\"\xcb\x01\n" +
 	"\x06Secret\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12-\n" +
-	"\x04meta\x18\x02 \x01(\v2\x19.keeper.v1.SecretMetadataR\x04meta\x12%\n" +
+	"\x04meta\x18\x02 \x01(\v2\x19.secret.v1.SecretMetadataR\x04meta\x12%\n" +
 	"\x0eencrypted_data\x18\x03 \x01(\fR\rencryptedData\x12\x1d\n" +
 	"\n" +
 	"created_at\x18\x04 \x01(\x03R\tcreatedAt\x12\x1d\n" +
@@ -566,44 +566,44 @@ const file_keeper_v1_secret_proto_rawDesc = "" +
 	"\n" +
 	"is_deleted\x18\x06 \x01(\bR\tisDeleted\"@\n" +
 	"\x13CreateSecretRequest\x12)\n" +
-	"\x06secret\x18\x01 \x01(\v2\x11.keeper.v1.SecretR\x06secret\"B\n" +
+	"\x06secret\x18\x01 \x01(\v2\x11.secret.v1.SecretR\x06secret\"B\n" +
 	"\x13ListSecretsResponse\x12+\n" +
-	"\asecrets\x18\x01 \x03(\v2\x11.keeper.v1.SecretR\asecrets\"@\n" +
+	"\asecrets\x18\x01 \x03(\v2\x11.secret.v1.SecretR\asecrets\"@\n" +
 	"\x13UpdateSecretRequest\x12)\n" +
-	"\x06secret\x18\x01 \x01(\v2\x11.keeper.v1.SecretR\x06secret\"D\n" +
+	"\x06secret\x18\x01 \x01(\v2\x11.secret.v1.SecretR\x06secret\"D\n" +
 	"\x13DeleteSecretRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1d\n" +
 	"\n" +
 	"updated_at\x18\x02 \x01(\x03R\tupdatedAt2\xae\x02\n" +
 	"\rSecretService\x12F\n" +
-	"\fCreateSecret\x12\x1e.keeper.v1.CreateSecretRequest\x1a\x16.google.protobuf.Empty\x12E\n" +
-	"\vListSecrets\x12\x16.google.protobuf.Empty\x1a\x1e.keeper.v1.ListSecretsResponse\x12F\n" +
-	"\fUpdateSecret\x12\x1e.keeper.v1.UpdateSecretRequest\x1a\x16.google.protobuf.Empty\x12F\n" +
-	"\fDeleteSecret\x12\x1e.keeper.v1.DeleteSecretRequest\x1a\x16.google.protobuf.EmptyB9Z7github.com/ArtShib/gophkeeper/gen/go/keeper/v1;keeperv1b\beditionsp\xe8\a"
+	"\fCreateSecret\x12\x1e.secret.v1.CreateSecretRequest\x1a\x16.google.protobuf.Empty\x12E\n" +
+	"\vListSecrets\x12\x16.google.protobuf.Empty\x1a\x1e.secret.v1.ListSecretsResponse\x12F\n" +
+	"\fUpdateSecret\x12\x1e.secret.v1.UpdateSecretRequest\x1a\x16.google.protobuf.Empty\x12F\n" +
+	"\fDeleteSecret\x12\x1e.secret.v1.DeleteSecretRequest\x1a\x16.google.protobuf.EmptyB9Z7github.com/ArtShib/gophkeeper/gen/go/secret/v1;keeperv1b\beditionsp\xe8\a"
 
 var file_keeper_v1_secret_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_keeper_v1_secret_proto_goTypes = []any{
-	(*Secret)(nil),              // 0: keeper.v1.Secret
-	(*CreateSecretRequest)(nil), // 1: keeper.v1.CreateSecretRequest
-	(*ListSecretsResponse)(nil), // 2: keeper.v1.ListSecretsResponse
-	(*UpdateSecretRequest)(nil), // 3: keeper.v1.UpdateSecretRequest
-	(*DeleteSecretRequest)(nil), // 4: keeper.v1.DeleteSecretRequest
-	(*SecretMetadata)(nil),      // 5: keeper.v1.SecretMetadata
+	(*Secret)(nil),              // 0: secret.v1.Secret
+	(*CreateSecretRequest)(nil), // 1: secret.v1.CreateSecretRequest
+	(*ListSecretsResponse)(nil), // 2: secret.v1.ListSecretsResponse
+	(*UpdateSecretRequest)(nil), // 3: secret.v1.UpdateSecretRequest
+	(*DeleteSecretRequest)(nil), // 4: secret.v1.DeleteSecretRequest
+	(*SecretMetadata)(nil),      // 5: secret.v1.SecretMetadata
 	(*emptypb.Empty)(nil),       // 6: google.protobuf.Empty
 }
 var file_keeper_v1_secret_proto_depIdxs = []int32{
-	5, // 0: keeper.v1.Secret.meta:type_name -> keeper.v1.SecretMetadata
-	0, // 1: keeper.v1.CreateSecretRequest.secret:type_name -> keeper.v1.Secret
-	0, // 2: keeper.v1.ListSecretsResponse.secrets:type_name -> keeper.v1.Secret
-	0, // 3: keeper.v1.UpdateSecretRequest.secret:type_name -> keeper.v1.Secret
-	1, // 4: keeper.v1.SecretService.CreateSecret:input_type -> keeper.v1.CreateSecretRequest
-	6, // 5: keeper.v1.SecretService.ListSecrets:input_type -> google.protobuf.Empty
-	3, // 6: keeper.v1.SecretService.UpdateSecret:input_type -> keeper.v1.UpdateSecretRequest
-	4, // 7: keeper.v1.SecretService.DeleteSecret:input_type -> keeper.v1.DeleteSecretRequest
-	6, // 8: keeper.v1.SecretService.CreateSecret:output_type -> google.protobuf.Empty
-	2, // 9: keeper.v1.SecretService.ListSecrets:output_type -> keeper.v1.ListSecretsResponse
-	6, // 10: keeper.v1.SecretService.UpdateSecret:output_type -> google.protobuf.Empty
-	6, // 11: keeper.v1.SecretService.DeleteSecret:output_type -> google.protobuf.Empty
+	5, // 0: secret.v1.Secret.meta:type_name -> secret.v1.SecretMetadata
+	0, // 1: secret.v1.CreateSecretRequest.secret:type_name -> secret.v1.Secret
+	0, // 2: secret.v1.ListSecretsResponse.secrets:type_name -> secret.v1.Secret
+	0, // 3: secret.v1.UpdateSecretRequest.secret:type_name -> secret.v1.Secret
+	1, // 4: secret.v1.SecretService.CreateSecret:input_type -> secret.v1.CreateSecretRequest
+	6, // 5: secret.v1.SecretService.ListSecrets:input_type -> google.protobuf.Empty
+	3, // 6: secret.v1.SecretService.UpdateSecret:input_type -> secret.v1.UpdateSecretRequest
+	4, // 7: secret.v1.SecretService.deleteSecret:input_type -> secret.v1.DeleteSecretRequest
+	6, // 8: secret.v1.SecretService.CreateSecret:output_type -> google.protobuf.Empty
+	2, // 9: secret.v1.SecretService.ListSecrets:output_type -> secret.v1.ListSecretsResponse
+	6, // 10: secret.v1.SecretService.UpdateSecret:output_type -> google.protobuf.Empty
+	6, // 11: secret.v1.SecretService.deleteSecret:output_type -> google.protobuf.Empty
 	8, // [8:12] is the sub-list for method output_type
 	4, // [4:8] is the sub-list for method input_type
 	4, // [4:4] is the sub-list for extension type_name

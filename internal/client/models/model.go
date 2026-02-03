@@ -1,7 +1,6 @@
 package models
 
 import (
-	"encoding/json"
 	"errors"
 )
 
@@ -36,15 +35,21 @@ const (
 
 // Secret структура секрета
 type Secret struct {
-	ID        string          `json:"id"`
-	UserID    int64           `json:"-"`
-	Type      SecretType      `json:"type"`
-	Data      []byte          `json:"data"`
-	Metadata  json.RawMessage `json:"metadata"`
-	CreatedAt int64           `json:"created_at"`
-	UpdatedAt int64           `json:"updated_at"`
-	IsDeleted bool            `json:"is_deleted"`
-	Status    SyncStatus      `json:"status"`
+	ID     string `json:"id"`
+	UserID int64  `json:"-"`
+	//Type      SecretType     `json:"type"`
+	Data      []byte         `json:"data"`
+	Metadata  SecretMetadata `json:"metadata"`
+	CreatedAt int64          `json:"created_at"`
+	UpdatedAt int64          `json:"updated_at"`
+	IsDeleted bool           `json:"is_deleted"`
+	Status    SyncStatus     `json:"status"`
+}
+
+type SecretMetadata struct {
+	Type  SecretType
+	Name  string
+	Extra map[string]string
 }
 
 // ArraySecret список секретов
