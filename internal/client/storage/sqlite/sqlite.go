@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"embed"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -64,16 +65,15 @@ func (s *StoreSqlite) AddUser(ctx context.Context, id int64, login string, passH
 }
 
 // GetUser select пользователя по логину
-func (s *StoreSqlite) GetUser(ctx context.Context, login string, passHash []byte) (*models.User, error) {
+func (s *StoreSqlite) GetUser(ctx context.Context, login string) (*models.User, error) {
 	const op = "storage.sqlite.GetUser"
 
 	query := `
 			SELECT user_id, login, password_hash 
 			FROM users 
-			WHERE login = ? 
-			  AND password_hash = ?`
+			WHERE login = ?`
 
-	row := s.db.QueryRowContext(ctx, query, login, passHash)
+	row := s.db.QueryRowContext(ctx, query, login)
 
 	var user models.User
 	if err := row.Scan(&user.ID, &user.Login, &user.PasswordHash); err != nil {
@@ -133,11 +133,20 @@ func (s *StoreSqlite) GetUserSecrets(ctx context.Context, userID int64) (models.
 		var secret models.Secret
 		var updatedAt sql.NullInt64
 
-		err := rows.Scan(&secret.ID, &secret.Type, &secret.Data, &secret.Metadata, &secret.CreatedAt, &updatedAt, &secret.Status)
+		var metadataRaw []byte
+		var typeRaw string
+
+		err := rows.Scan(&secret.ID, &secret.Metadata.Type, &secret.Data, &secret.Metadata, &secret.CreatedAt, &updatedAt, &secret.Status)
 
 		if err != nil {
 			return nil, fmt.Errorf("%s: scan: %w", op, err)
 		}
+
+		if err := json.Unmarshal(metadataRaw, &secret.Metadata); err != nil {
+			return nil, fmt.Errorf("%s: unmarshal metadata: %w", op, err)
+		}
+
+		secret.Metadata.Type = models.SecretType(typeRaw)
 
 		if updatedAt.Valid {
 			secret.UpdatedAt = updatedAt.Int64
@@ -264,7 +273,7 @@ func (s *StoreSqlite) GetSecretsToSync(ctx context.Context, userID int64) (model
 		var secret models.Secret
 		var updatedAt sql.NullInt64
 
-		err := rows.Scan(&secret.ID, &secret.Type, &secret.Data, &secret.Metadata, &secret.CreatedAt, &updatedAt, &secret.Status)
+		err := rows.Scan(&secret.ID, &secret.Metadata.Type, &secret.Data, &secret.Metadata, &secret.CreatedAt, &updatedAt, &secret.Status)
 
 		if err != nil {
 			return nil, fmt.Errorf("%s: scan: %w", op, err)

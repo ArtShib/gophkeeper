@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        v6.33.4
-// source: secret/v1/sync.proto
+// source: keeper/v1/sync.proto
 
 package keeperv1
 
@@ -206,27 +206,27 @@ var File_keeper_v1_sync_proto protoreflect.FileDescriptor
 
 const file_keeper_v1_sync_proto_rawDesc = "" +
 	"\n" +
-	"\x14keeper/v1/sync.proto\x12\tsecret.v1\x1a\x16keeper/v1/secret.proto\"b\n" +
+	"\x14keeper/v1/sync.proto\x12\tkeeper.v1\x1a\x16keeper/v1/secret.proto\"b\n" +
 	"\vSyncRequest\x12&\n" +
 	"\x0flast_sync_point\x18\x01 \x01(\x03R\rlastSyncPoint\x12+\n" +
-	"\asecrets\x18\x02 \x03(\v2\x11.secret.v1.SecretR\asecrets\"g\n" +
+	"\asecrets\x18\x02 \x03(\v2\x11.keeper.v1.SecretR\asecrets\"g\n" +
 	"\fSyncResponse\x12+\n" +
-	"\asecrets\x18\x01 \x03(\v2\x11.secret.v1.SecretR\asecrets\x12*\n" +
+	"\asecrets\x18\x01 \x03(\v2\x11.keeper.v1.SecretR\asecrets\x12*\n" +
 	"\x11server_sync_point\x18\x02 \x01(\x03R\x0fserverSyncPoint2F\n" +
 	"\vSyncService\x127\n" +
-	"\x04Sync\x12\x16.secret.v1.SyncRequest\x1a\x17.secret.v1.SyncResponseB9Z7github.com/ArtShib/gophkeeper/gen/go/secret/v1;keeperv1b\beditionsp\xe8\a"
+	"\x04Sync\x12\x16.keeper.v1.SyncRequest\x1a\x17.keeper.v1.SyncResponseB9Z7github.com/ArtShib/gophkeeper/gen/go/secret/v1;keeperv1b\beditionsp\xe8\a"
 
 var file_keeper_v1_sync_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_keeper_v1_sync_proto_goTypes = []any{
-	(*SyncRequest)(nil),  // 0: secret.v1.SyncRequest
-	(*SyncResponse)(nil), // 1: secret.v1.SyncResponse
-	(*Secret)(nil),       // 2: secret.v1.Secret
+	(*SyncRequest)(nil),  // 0: keeper.v1.SyncRequest
+	(*SyncResponse)(nil), // 1: keeper.v1.SyncResponse
+	(*Secret)(nil),       // 2: keeper.v1.Secret
 }
 var file_keeper_v1_sync_proto_depIdxs = []int32{
-	2, // 0: secret.v1.SyncRequest.secrets:type_name -> secret.v1.Secret
-	2, // 1: secret.v1.SyncResponse.secrets:type_name -> secret.v1.Secret
-	0, // 2: secret.v1.SyncService.Sync:input_type -> secret.v1.SyncRequest
-	1, // 3: secret.v1.SyncService.Sync:output_type -> secret.v1.SyncResponse
+	2, // 0: keeper.v1.SyncRequest.secrets:type_name -> keeper.v1.Secret
+	2, // 1: keeper.v1.SyncResponse.secrets:type_name -> keeper.v1.Secret
+	0, // 2: keeper.v1.SyncService.Sync:input_type -> keeper.v1.SyncRequest
+	1, // 3: keeper.v1.SyncService.Sync:output_type -> keeper.v1.SyncResponse
 	3, // [3:4] is the sub-list for method output_type
 	2, // [2:3] is the sub-list for method input_type
 	2, // [2:2] is the sub-list for extension type_name

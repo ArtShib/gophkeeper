@@ -30,12 +30,12 @@ func New(log *slog.Logger, store StoreUser, config *models2.ConfigJWT) *Auth {
 	}
 }
 
-func (a *Auth) RegisterNewUser(ctx context.Context, login string, passHash string) (int64, error) {
+func (a *Auth) RegisterNewUser(ctx context.Context, login string, passHash []byte) (int64, error) {
 	log := loghelper.New(a.log, "Auth.RegisterNewUser")
 
 	log.LogDebug(ctx, "register user", slog.String("login", login))
 
-	passHashSrv, err := bcrypt.GenerateFromPassword([]byte(passHash), bcrypt.DefaultCost)
+	passHashSrv, err := bcrypt.GenerateFromPassword(passHash, bcrypt.DefaultCost)
 	if err != nil {
 		return 0, log.LogAndReturnError(ctx, "bcrypt.GenerateFromPassword", err)
 	}
@@ -48,7 +48,7 @@ func (a *Auth) RegisterNewUser(ctx context.Context, login string, passHash strin
 	return user.ID, nil
 }
 
-func (a *Auth) Login(ctx context.Context, login string, passHash string) (string, error) {
+func (a *Auth) Login(ctx context.Context, login string, passHash []byte) (string, error) {
 	log := loghelper.New(a.log, "Auth.Login")
 
 	log.LogDebug(ctx, "login user", slog.String("login", login))
@@ -58,7 +58,7 @@ func (a *Auth) Login(ctx context.Context, login string, passHash string) (string
 		return "", log.LogAndReturnError(ctx, "store.GetUser", err)
 	}
 
-	if err := bcrypt.CompareHashAndPassword(user.PasswordHash, []byte(passHash)); err != nil {
+	if err := bcrypt.CompareHashAndPassword(user.PasswordHash, passHash); err != nil {
 		return "", log.LogAndReturnError(ctx, "bcrypt.CompareHashAndPassword", models2.ErrInvalidCredentials)
 	}
 

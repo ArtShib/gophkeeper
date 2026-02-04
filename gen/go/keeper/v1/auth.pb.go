@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        v6.33.4
-// source: secret/v1/auth.proto
+// source: keeper/v1/auth.proto
 
 package keeperv1
 
@@ -23,7 +23,7 @@ const (
 type RegisterRequest struct {
 	state                   protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Login        *string                `protobuf:"bytes,1,opt,name=login"`
-	xxx_hidden_PasswordHash *string                `protobuf:"bytes,2,opt,name=password_hash,json=passwordHash"`
+	xxx_hidden_PasswordHash []byte                 `protobuf:"bytes,2,opt,name=password_hash,json=passwordHash"`
 	XXX_raceDetectHookData  protoimpl.RaceDetectHookData
 	XXX_presence            [1]uint32
 	unknownFields           protoimpl.UnknownFields
@@ -65,14 +65,11 @@ func (x *RegisterRequest) GetLogin() string {
 	return ""
 }
 
-func (x *RegisterRequest) GetPasswordHash() string {
+func (x *RegisterRequest) GetPasswordHash() []byte {
 	if x != nil {
-		if x.xxx_hidden_PasswordHash != nil {
-			return *x.xxx_hidden_PasswordHash
-		}
-		return ""
+		return x.xxx_hidden_PasswordHash
 	}
-	return ""
+	return nil
 }
 
 func (x *RegisterRequest) SetLogin(v string) {
@@ -80,8 +77,11 @@ func (x *RegisterRequest) SetLogin(v string) {
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
 }
 
-func (x *RegisterRequest) SetPasswordHash(v string) {
-	x.xxx_hidden_PasswordHash = &v
+func (x *RegisterRequest) SetPasswordHash(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_PasswordHash = v
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
 }
 
@@ -113,7 +113,7 @@ type RegisterRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	Login        *string
-	PasswordHash *string
+	PasswordHash []byte
 }
 
 func (b0 RegisterRequest_builder) Build() *RegisterRequest {
@@ -209,7 +209,7 @@ func (b0 RegisterResponse_builder) Build() *RegisterResponse {
 type LoginRequest struct {
 	state                   protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Login        *string                `protobuf:"bytes,1,opt,name=login"`
-	xxx_hidden_PasswordHash *string                `protobuf:"bytes,2,opt,name=password_hash,json=passwordHash"`
+	xxx_hidden_PasswordHash []byte                 `protobuf:"bytes,2,opt,name=password_hash,json=passwordHash"`
 	XXX_raceDetectHookData  protoimpl.RaceDetectHookData
 	XXX_presence            [1]uint32
 	unknownFields           protoimpl.UnknownFields
@@ -251,14 +251,11 @@ func (x *LoginRequest) GetLogin() string {
 	return ""
 }
 
-func (x *LoginRequest) GetPasswordHash() string {
+func (x *LoginRequest) GetPasswordHash() []byte {
 	if x != nil {
-		if x.xxx_hidden_PasswordHash != nil {
-			return *x.xxx_hidden_PasswordHash
-		}
-		return ""
+		return x.xxx_hidden_PasswordHash
 	}
-	return ""
+	return nil
 }
 
 func (x *LoginRequest) SetLogin(v string) {
@@ -266,8 +263,11 @@ func (x *LoginRequest) SetLogin(v string) {
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
 }
 
-func (x *LoginRequest) SetPasswordHash(v string) {
-	x.xxx_hidden_PasswordHash = &v
+func (x *LoginRequest) SetPasswordHash(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_PasswordHash = v
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
 }
 
@@ -299,7 +299,7 @@ type LoginRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	Login        *string
-	PasswordHash *string
+	PasswordHash []byte
 }
 
 func (b0 LoginRequest_builder) Build() *LoginRequest {
@@ -399,33 +399,33 @@ var File_keeper_v1_auth_proto protoreflect.FileDescriptor
 
 const file_keeper_v1_auth_proto_rawDesc = "" +
 	"\n" +
-	"\x14keeper/v1/auth.proto\x12\tsecret.v1\"L\n" +
+	"\x14keeper/v1/auth.proto\x12\tkeeper.v1\"L\n" +
 	"\x0fRegisterRequest\x12\x14\n" +
 	"\x05login\x18\x01 \x01(\tR\x05login\x12#\n" +
-	"\rpassword_hash\x18\x02 \x01(\tR\fpasswordHash\"+\n" +
+	"\rpassword_hash\x18\x02 \x01(\fR\fpasswordHash\"+\n" +
 	"\x10RegisterResponse\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\x03R\x06userId\"I\n" +
 	"\fLoginRequest\x12\x14\n" +
 	"\x05login\x18\x01 \x01(\tR\x05login\x12#\n" +
-	"\rpassword_hash\x18\x02 \x01(\tR\fpasswordHash\"2\n" +
+	"\rpassword_hash\x18\x02 \x01(\fR\fpasswordHash\"2\n" +
 	"\rLoginResponse\x12!\n" +
 	"\faccess_token\x18\x01 \x01(\tR\vaccessToken2\x8e\x01\n" +
 	"\vAuthService\x12C\n" +
-	"\bRegister\x12\x1a.secret.v1.RegisterRequest\x1a\x1b.secret.v1.RegisterResponse\x12:\n" +
-	"\x05Login\x12\x17.secret.v1.LoginRequest\x1a\x18.secret.v1.LoginResponseB9Z7github.com/ArtShib/gophkeeper/gen/go/secret/v1;keeperv1b\beditionsp\xe8\a"
+	"\bRegister\x12\x1a.keeper.v1.RegisterRequest\x1a\x1b.keeper.v1.RegisterResponse\x12:\n" +
+	"\x05Login\x12\x17.keeper.v1.LoginRequest\x1a\x18.keeper.v1.LoginResponseB9Z7github.com/ArtShib/gophkeeper/gen/go/secret/v1;keeperv1b\beditionsp\xe8\a"
 
 var file_keeper_v1_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_keeper_v1_auth_proto_goTypes = []any{
-	(*RegisterRequest)(nil),  // 0: secret.v1.RegisterRequest
-	(*RegisterResponse)(nil), // 1: secret.v1.RegisterResponse
-	(*LoginRequest)(nil),     // 2: secret.v1.LoginRequest
-	(*LoginResponse)(nil),    // 3: secret.v1.LoginResponse
+	(*RegisterRequest)(nil),  // 0: keeper.v1.RegisterRequest
+	(*RegisterResponse)(nil), // 1: keeper.v1.RegisterResponse
+	(*LoginRequest)(nil),     // 2: keeper.v1.LoginRequest
+	(*LoginResponse)(nil),    // 3: keeper.v1.LoginResponse
 }
 var file_keeper_v1_auth_proto_depIdxs = []int32{
-	0, // 0: secret.v1.AuthService.Register:input_type -> secret.v1.RegisterRequest
-	2, // 1: secret.v1.AuthService.Login:input_type -> secret.v1.LoginRequest
-	1, // 2: secret.v1.AuthService.Register:output_type -> secret.v1.RegisterResponse
-	3, // 3: secret.v1.AuthService.Login:output_type -> secret.v1.LoginResponse
+	0, // 0: keeper.v1.AuthService.Register:input_type -> keeper.v1.RegisterRequest
+	2, // 1: keeper.v1.AuthService.Login:input_type -> keeper.v1.LoginRequest
+	1, // 2: keeper.v1.AuthService.Register:output_type -> keeper.v1.RegisterResponse
+	3, // 3: keeper.v1.AuthService.Login:output_type -> keeper.v1.LoginResponse
 	2, // [2:4] is the sub-list for method output_type
 	0, // [0:2] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name

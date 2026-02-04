@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.0
 // - protoc             v6.33.4
-// source: secret/v1/auth.proto
+// source: keeper/v1/auth.proto
 
 package keeperv1
 
@@ -19,8 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AuthService_Register_FullMethodName = "/secret.v1.AuthService/Register"
-	AuthService_Login_FullMethodName    = "/secret.v1.AuthService/Login"
+	AuthService_Register_FullMethodName = "/keeper.v1.AuthService/Register"
+	AuthService_Login_FullMethodName    = "/keeper.v1.AuthService/Login"
 )
 
 // AuthServiceClient is the client API for AuthService service.
@@ -142,7 +142,7 @@ func _AuthService_Login_Handler(srv interface{}, ctx context.Context, dec func(i
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var AuthService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "secret.v1.AuthService",
+	ServiceName: "keeper.v1.AuthService",
 	HandlerType: (*AuthServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -155,5 +155,5 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "secret/v1/auth.proto",
+	Metadata: "keeper/v1/auth.proto",
 }

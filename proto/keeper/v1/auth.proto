@@ -11,7 +11,7 @@ service AuthService {
 
 message RegisterRequest {
   string login = 1;
-  string password_hash = 2;
+  bytes password_hash = 2;
 }
 
 message RegisterResponse {
@@ -20,7 +20,7 @@ message RegisterResponse {
 
 message LoginRequest {
   string login = 1;
-  string password_hash = 2;
+  bytes password_hash = 2;
 }
 
 message LoginResponse {

@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.0
 // - protoc             v6.33.4
-// source: secret/v1/secret.proto
+// source: keeper/v1/secret.proto
 
 package keeperv1
 
@@ -20,10 +20,10 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	SecretService_CreateSecret_FullMethodName = "/secret.v1.SecretService/CreateSecret"
-	SecretService_ListSecrets_FullMethodName  = "/secret.v1.SecretService/ListSecrets"
-	SecretService_UpdateSecret_FullMethodName = "/secret.v1.SecretService/UpdateSecret"
-	SecretService_DeleteSecret_FullMethodName = "/secret.v1.SecretService/deleteSecret"
+	SecretService_CreateSecret_FullMethodName = "/keeper.v1.SecretService/CreateSecret"
+	SecretService_ListSecrets_FullMethodName  = "/keeper.v1.SecretService/ListSecrets"
+	SecretService_UpdateSecret_FullMethodName = "/keeper.v1.SecretService/UpdateSecret"
+	SecretService_DeleteSecret_FullMethodName = "/keeper.v1.SecretService/DeleteSecret"
 )
 
 // SecretServiceClient is the client API for SecretService service.
@@ -112,7 +112,7 @@ func (UnimplementedSecretServiceServer) UpdateSecret(context.Context, *UpdateSec
 	return nil, status.Error(codes.Unimplemented, "method UpdateSecret not implemented")
 }
 func (UnimplementedSecretServiceServer) DeleteSecret(context.Context, *DeleteSecretRequest) (*emptypb.Empty, error) {
-	return nil, status.Error(codes.Unimplemented, "method deleteSecret not implemented")
+	return nil, status.Error(codes.Unimplemented, "method DeleteSecret not implemented")
 }
 func (UnimplementedSecretServiceServer) mustEmbedUnimplementedSecretServiceServer() {}
 func (UnimplementedSecretServiceServer) testEmbeddedByValue()                       {}
@@ -211,7 +211,7 @@ func _SecretService_DeleteSecret_Handler(srv interface{}, ctx context.Context, d
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var SecretService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "secret.v1.SecretService",
+	ServiceName: "keeper.v1.SecretService",
 	HandlerType: (*SecretServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -227,10 +227,10 @@ var SecretService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _SecretService_UpdateSecret_Handler,
 		},
 		{
-			MethodName: "deleteSecret",
+			MethodName: "DeleteSecret",
 			Handler:    _SecretService_DeleteSecret_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "secret/v1/secret.proto",
+	Metadata: "keeper/v1/secret.proto",
 }

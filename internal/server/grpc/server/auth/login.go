@@ -15,7 +15,7 @@ func (s *serverAPI) Login(ctx context.Context, req *keeperv1.LoginRequest) (*kee
 	login := req.GetLogin()
 	passHash := req.GetPasswordHash()
 
-	if login == "" || passHash == "" {
+	if login == "" || len(passHash) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "login and password_hash required")
 	}
 

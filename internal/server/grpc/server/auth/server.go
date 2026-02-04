@@ -7,8 +7,8 @@ import (
 )
 
 type AuthService interface {
-	RegisterNewUser(ctx context.Context, login string, passHash string) (int64, error)
-	Login(ctx context.Context, login string, passHash string) (string, error)
+	RegisterNewUser(ctx context.Context, login string, passHash []byte) (int64, error)
+	Login(ctx context.Context, login string, passHash []byte) (string, error)
 }
 
 type serverAPI struct {

@@ -13,7 +13,7 @@ func (s *serverAPI) Register(ctx context.Context, req *keeperv1.RegisterRequest)
 	login := req.GetLogin()
 	passHash := req.GetPasswordHash()
 
-	if login == "" || passHash == "" {
+	if login == "" || len(passHash) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "login and password_hash required")
 	}
 

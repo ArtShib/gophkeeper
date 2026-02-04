@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        v6.33.4
-// source: secret/v1/common.proto
+// source: keeper/v1/common.proto
 
 package keeperv1
 
@@ -72,7 +72,7 @@ func (x SecretType) Number() protoreflect.EnumNumber {
 
 type SecretMetadata struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Type        SecretType             `protobuf:"varint,1,opt,name=type,enum=secret.v1.SecretType"`
+	xxx_hidden_Type        SecretType             `protobuf:"varint,1,opt,name=type,enum=keeper.v1.SecretType"`
 	xxx_hidden_Name        *string                `protobuf:"bytes,2,opt,name=name"`
 	xxx_hidden_Extra       map[string]string      `protobuf:"bytes,3,rep,name=extra" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	XXX_raceDetectHookData protoimpl.RaceDetectHookData
@@ -198,11 +198,11 @@ var File_keeper_v1_common_proto protoreflect.FileDescriptor
 
 const file_keeper_v1_common_proto_rawDesc = "" +
 	"\n" +
-	"\x16keeper/v1/common.proto\x12\tsecret.v1\"\xc5\x01\n" +
+	"\x16keeper/v1/common.proto\x12\tkeeper.v1\"\xc5\x01\n" +
 	"\x0eSecretMetadata\x12)\n" +
-	"\x04type\x18\x01 \x01(\x0e2\x15.secret.v1.SecretTypeR\x04type\x12\x12\n" +
+	"\x04type\x18\x01 \x01(\x0e2\x15.keeper.v1.SecretTypeR\x04type\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12:\n" +
-	"\x05extra\x18\x03 \x03(\v2$.secret.v1.SecretMetadata.ExtraEntryR\x05extra\x1a8\n" +
+	"\x05extra\x18\x03 \x03(\v2$.keeper.v1.SecretMetadata.ExtraEntryR\x05extra\x1a8\n" +
 	"\n" +
 	"ExtraEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -218,13 +218,13 @@ const file_keeper_v1_common_proto_rawDesc = "" +
 var file_keeper_v1_common_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_keeper_v1_common_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_keeper_v1_common_proto_goTypes = []any{
-	(SecretType)(0),        // 0: secret.v1.SecretType
-	(*SecretMetadata)(nil), // 1: secret.v1.SecretMetadata
-	nil,                    // 2: secret.v1.SecretMetadata.ExtraEntry
+	(SecretType)(0),        // 0: keeper.v1.SecretType
+	(*SecretMetadata)(nil), // 1: keeper.v1.SecretMetadata
+	nil,                    // 2: keeper.v1.SecretMetadata.ExtraEntry
 }
 var file_keeper_v1_common_proto_depIdxs = []int32{
-	0, // 0: secret.v1.SecretMetadata.type:type_name -> secret.v1.SecretType
-	2, // 1: secret.v1.SecretMetadata.extra:type_name -> secret.v1.SecretMetadata.ExtraEntry
+	0, // 0: keeper.v1.SecretMetadata.type:type_name -> keeper.v1.SecretType
+	2, // 1: keeper.v1.SecretMetadata.extra:type_name -> keeper.v1.SecretMetadata.ExtraEntry
 	2, // [2:2] is the sub-list for method output_type
 	2, // [2:2] is the sub-list for method input_type
 	2, // [2:2] is the sub-list for extension type_name
