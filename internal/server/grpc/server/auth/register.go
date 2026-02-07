@@ -2,8 +2,10 @@ package auth
 
 import (
 	"context"
+	"errors"
 
 	keeperv1 "github.com/ArtShib/gophkeeper/gen/go/keeper/v1"
+	"github.com/ArtShib/gophkeeper/internal/models"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
@@ -20,6 +22,9 @@ func (s *serverAPI) Register(ctx context.Context, req *keeperv1.RegisterRequest)
 	userID, err := s.service.RegisterNewUser(ctx, login, passHash)
 
 	if err != nil {
+		if errors.Is(err, models.ErrUserExists) {
+			return nil, status.Error(codes.AlreadyExists, err.Error())
+		}
 		return nil, status.Error(codes.Internal, "internal server error")
 	}
 

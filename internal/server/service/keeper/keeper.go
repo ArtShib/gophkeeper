@@ -2,11 +2,12 @@ package keeper
 
 import (
 	"context"
+	"encoding/json"
 	"log/slog"
 	"strconv"
 
 	"github.com/ArtShib/gophkeeper/internal/lib/loghelper"
-	"github.com/ArtShib/gophkeeper/internal/server/models"
+	"github.com/ArtShib/gophkeeper/internal/models"
 )
 
 type StoreKeeper interface {
@@ -31,7 +32,11 @@ func New(log *slog.Logger, store StoreKeeper) *Keeper {
 func (k *Keeper) AddSecret(ctx context.Context, s *models.Secret) error {
 	log := loghelper.New(k.log, "Keeper.AddSecret")
 	log.LogDebug(ctx, "adding secret", slog.String("id", s.ID))
-	if err := k.store.AddSecret(ctx, s.ID, s.UserID, string(s.Type), s.Data, string(s.Metadata), s.CreatedAt); err != nil {
+	metaData, err := json.Marshal(s.Metadata)
+	if err != nil {
+		return log.LogAndReturnError(ctx, "json.Marshal(s.Metadata)", err)
+	}
+	if err = k.store.AddSecret(ctx, s.ID, s.UserID, string(s.Type), s.Data, string(metaData), s.CreatedAt); err != nil {
 		return log.LogAndReturnError(ctx, "store.AddSecret", err)
 	}
 	return nil
@@ -50,7 +55,11 @@ func (k *Keeper) GetUserSecrets(ctx context.Context, userID int64) (models.Array
 func (k *Keeper) UpdateSecret(ctx context.Context, s *models.Secret) error {
 	log := loghelper.New(k.log, "Keeper.UpdateSecret")
 	log.LogDebug(ctx, "updating secret", slog.String("id", s.ID))
-	if err := k.store.UpdateSecret(ctx, s.ID, s.UserID, string(s.Type), s.Data, string(s.Metadata), s.UpdatedAt); err != nil {
+	metaData, err := json.Marshal(s.Metadata)
+	if err != nil {
+		return log.LogAndReturnError(ctx, "json.Marshal(s.Metadata)", err)
+	}
+	if err := k.store.UpdateSecret(ctx, s.ID, s.UserID, string(s.Type), s.Data, string(metaData), s.UpdatedAt); err != nil {
 		return log.LogAndReturnError(ctx, "store.UpdateSecret", err)
 	}
 	return nil

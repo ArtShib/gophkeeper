@@ -6,9 +6,9 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/ArtShib/gophkeeper/internal/client/models"
 	"github.com/ArtShib/gophkeeper/internal/lib/crypto"
 	"github.com/ArtShib/gophkeeper/internal/lib/loghelper"
+	"github.com/ArtShib/gophkeeper/internal/models"
 )
 
 type StoreSecret interface {
@@ -16,6 +16,9 @@ type StoreSecret interface {
 	GetUserSecrets(ctx context.Context, userID int64) (models.ArraySecret, error)
 	UpdateSecret(ctx context.Context, secretID string, userID int64, typeSecret string, data []byte, metadata string, updatedAT int64, status string) error
 	MarkDeleteSecret(ctx context.Context, secretID string, ownerID int64, updatedAT int64, status string) error
+	ListUserSecrets(ctx context.Context, userID int64) (models.ListSecrets, error)
+	GetSecretsToSync(ctx context.Context, userID int64) (models.ArraySecret, error)
+	MarkSynced(ctx context.Context, secretID string, ownerID int64, isDeleted bool, status string) error
 }
 
 type SecretSvc struct {
@@ -26,6 +29,37 @@ type SecretSvc struct {
 
 func New(store StoreSecret, logger *slog.Logger, cryptoSvc *crypto.CryptoService) *SecretSvc {
 	return &SecretSvc{store: store, logger: logger, cryptoSvc: cryptoSvc}
+}
+
+func (s *SecretSvc) CreateSecret(
+	ctx context.Context,
+	userID int64,
+	typeSecret models.SecretType,
+	data []byte,
+	metadata models.SecretMetadata,
+) (*models.Secret, error) {
+
+	log := loghelper.New(s.logger, "CreateSecret")
+
+	id, err := crypto.GenerateUUID()
+	if err != nil {
+		return nil, log.LogAndReturnError(ctx, "secret create failed", err)
+	}
+
+	encryptData, err := s.cryptoSvc.Encrypt(ctx, data)
+	if err != nil {
+		return nil, log.LogAndReturnError(ctx, "secret encrypt failed", err)
+	}
+
+	return &models.Secret{
+		ID:        id,
+		UserID:    userID,
+		Type:      typeSecret,
+		Data:      encryptData,
+		Metadata:  metadata,
+		CreatedAt: time.Now().Unix(),
+		Status:    models.StatusNew,
+	}, nil
 }
 
 func (s *SecretSvc) AddSecret(ctx context.Context, secret *models.Secret) error {
@@ -92,4 +126,30 @@ func (s *SecretSvc) MarkDeleteSecret(ctx context.Context, secretID string, owner
 		return log.LogAndReturnError(ctx, "s.store.MarkDeleteSecret(ctx)", err)
 	}
 	return nil
+}
+
+func (s *SecretSvc) ListUserSecrets(ctx context.Context, userID int64) (models.ListSecrets, error) {
+	log := loghelper.New(s.logger, "secret.ListUserSecrets")
+	secrets, err := s.store.ListUserSecrets(ctx, userID)
+	if err != nil {
+		return models.ListSecrets{}, log.LogAndReturnError(ctx, "s.store.ListUserSecrets()", err)
+	}
+	return secrets, nil
+}
+
+func (s *SecretSvc) MarkSynced(ctx context.Context, secret *models.Secret) error {
+	log := loghelper.New(s.logger, "secret.MarkSynced")
+	if err := s.store.MarkSynced(ctx, secret.ID, secret.UserID, secret.IsDeleted, string(models.StatusSynced)); err != nil {
+		return log.LogAndReturnError(ctx, "s.store.MarkSynced()", err)
+	}
+	return nil
+}
+
+func (s *SecretSvc) GetSecretsToSync(ctx context.Context, userID int64) (models.ArraySecret, error) {
+	log := loghelper.New(s.logger, "secret.GetSecretsToSync")
+	secrets, err := s.store.GetSecretsToSync(ctx, userID)
+	if err != nil {
+		return models.ArraySecret{}, log.LogAndReturnError(ctx, "s.store.GetSecretsToSync()", err)
+	}
+	return secrets, nil
 }

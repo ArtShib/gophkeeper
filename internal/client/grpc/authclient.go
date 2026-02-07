@@ -16,10 +16,10 @@ type AuthClient struct {
 	api    *auth.Client
 	logger *slog.Logger
 	Conn   *grpc.ClientConn
-	Token  string
+	//Token  string
 }
 
-func New(ctx context.Context, addr string, logger *slog.Logger, certPath string) (*AuthClient, error) {
+func NewAuthClient(ctx context.Context, addr string, logger *slog.Logger, certPath string) (*AuthClient, error) {
 	log := loghelper.New(logger, "NewAuthClient")
 	var opts []grpc.DialOption
 	if certPath != "" {
@@ -52,10 +52,10 @@ func (c *AuthClient) Close() error {
 	return c.Conn.Close()
 }
 
-func (c *AuthClient) Login(ctx context.Context, login, password string) (string, error) {
-	return c.api.Login(ctx, login, []byte(password))
+func (c *AuthClient) Login(ctx context.Context, login string, passHash []byte) (string, error) {
+	return c.api.Login(ctx, login, passHash)
 }
 
-func (c *AuthClient) Register(ctx context.Context, login, password string) (int64, error) {
-	return c.api.Register(ctx, login, []byte(password))
+func (c *AuthClient) Register(ctx context.Context, login string, passHash []byte) (int64, error) {
+	return c.api.Register(ctx, login, passHash)
 }

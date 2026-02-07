@@ -1,11 +1,11 @@
-package secret
+package customprototype
 
 import (
 	keeperv1 "github.com/ArtShib/gophkeeper/gen/go/keeper/v1"
-	"github.com/ArtShib/gophkeeper/internal/client/models"
+	"github.com/ArtShib/gophkeeper/internal/models"
 )
 
-func getProtoSecretType(secretType models.SecretType) *keeperv1.SecretType {
+func GetProtoSecretType(secretType models.SecretType) *keeperv1.SecretType {
 	var protoType keeperv1.SecretType
 
 	switch secretType {

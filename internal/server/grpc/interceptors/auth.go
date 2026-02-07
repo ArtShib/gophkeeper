@@ -3,7 +3,7 @@ package interceptors
 import (
 	"context"
 
-	"github.com/ArtShib/gophkeeper/internal/server/models"
+	"github.com/ArtShib/gophkeeper/internal/models"
 	"github.com/ArtShib/gophkeeper/internal/server/service/auth"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -19,8 +19,8 @@ func AuthInterceptor(auth *auth.Auth) grpc.UnaryServerInterceptor {
 		handler grpc.UnaryHandler) (interface{}, error) {
 
 		switch info.FullMethod {
-		case "/secret.v1.AuthService/Register",
-			"/secret.v1.AuthService/Login":
+		case "/keeper.v1.AuthService/Register",
+			"/keeper.v1.AuthService/Login":
 			return handler(ctx, req)
 		}
 

@@ -2,10 +2,9 @@ package secret
 
 import (
 	"context"
-	"encoding/json"
 
 	keeperv1 "github.com/ArtShib/gophkeeper/gen/go/keeper/v1"
-	"github.com/ArtShib/gophkeeper/internal/server/models"
+	"github.com/ArtShib/gophkeeper/internal/models"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -23,19 +22,25 @@ func (s *serverAPI) CreateSecret(ctx context.Context, req *keeperv1.CreateSecret
 		return nil, status.Error(codes.InvalidArgument, "secret is required")
 	}
 
-	metaBytes, err := json.Marshal(reqSecret.GetMeta())
-	if err != nil {
-		return nil, status.Error(codes.InvalidArgument, "invalid metadata")
-	}
-
+	//metadata := reqSecret.GetMeta()
+	//if err := json.Unmarshal(reqSecret.GetMeta(), &metadata); err != nil {}
+	//
+	//metaBytes, err := json.Marshal(reqSecret.GetMeta())
+	//if err != nil {
+	//	return nil, status.Error(codes.InvalidArgument, "invalid metadata")
+	//}
 	secretType := reqSecret.GetMeta().GetType().String()
 
 	modelSecret := &models.Secret{
-		ID:        reqSecret.GetId(),
-		UserID:    userID,
-		Type:      models.SecretType(secretType),
-		Data:      reqSecret.GetEncryptedData(),
-		Metadata:  metaBytes,
+		ID:     reqSecret.GetId(),
+		UserID: userID,
+		Type:   models.SecretType(secretType),
+		Data:   reqSecret.GetEncryptedData(),
+		Metadata: models.SecretMetadata{
+			Type:  models.SecretType(reqSecret.GetMeta().GetType().String()),
+			Name:  reqSecret.GetMeta().GetName(),
+			Extra: reqSecret.GetMeta().GetExtra(),
+		},
 		CreatedAt: reqSecret.GetCreatedAt(),
 		UpdatedAt: reqSecret.GetUpdatedAt(),
 		IsDeleted: reqSecret.GetIsDeleted(),

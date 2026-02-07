@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ArtShib/gophkeeper/internal/client/models"
 	"github.com/ArtShib/gophkeeper/internal/client/storage/sqlite"
+	"github.com/ArtShib/gophkeeper/internal/models"
 )
 
 type Storage interface {

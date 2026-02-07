@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ArtShib/gophkeeper/internal/server/models"
+	"github.com/ArtShib/gophkeeper/internal/models"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -34,4 +34,23 @@ func ParseToken(tokenString string, secretKey []byte) (*models.UserClaims, error
 		return nil, err
 	}
 	return claims, nil
+}
+
+type tokenClaimsParse struct {
+	UID   int64
+	Login string
+	EXP   int64
+	jwt.RegisteredClaims
+}
+
+func ParseTokenUserID(tokenString string) (int64, error) {
+	token, _, err := jwt.NewParser().ParseUnverified(tokenString, &tokenClaimsParse{})
+	if err != nil {
+		return 0, err
+	}
+
+	if claims, ok := token.Claims.(*tokenClaimsParse); ok {
+		return claims.UID, nil
+	}
+	return 0, fmt.Errorf("invalid token")
 }

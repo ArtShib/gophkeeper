@@ -2,7 +2,8 @@ package secret
 
 import (
 	"context"
-	"encoding/json"
+
+	"github.com/ArtShib/gophkeeper/internal/lib/customprototype"
 
 	keeperv1 "github.com/ArtShib/gophkeeper/gen/go/keeper/v1"
 	"google.golang.org/grpc/codes"
@@ -25,14 +26,18 @@ func (s *serverAPI) GetUserSecrets(ctx context.Context, empty *emptypb.Empty) (*
 	secrets := make([]*keeperv1.Secret, len(arraySecret))
 
 	for i, secret := range arraySecret {
-		var meta keeperv1.SecretMetadata
-		if err := json.Unmarshal(secret.Metadata, &meta); err != nil {
-
-			return nil, status.Errorf(codes.Internal, "failed to unmarshal meta for secret %s", secret.ID)
-		}
+		//var meta keeperv1.SecretMetadata
+		//if err := json.Unmarshal(secret.Metadata, &meta); err != nil {
+		//
+		//	return nil, status.Errorf(codes.Internal, "failed to unmarshal meta for secret %s", secret.ID)
+		//}
 		secrets[i] = keeperv1.Secret_builder{
-			Id:            proto.String(secret.ID),
-			Meta:          &meta,
+			Id: proto.String(secret.ID),
+			Meta: keeperv1.SecretMetadata_builder{
+				Type:  customprototype.GetProtoSecretType(secret.Metadata.Type),
+				Name:  proto.String(secret.Metadata.Name),
+				Extra: secret.Metadata.Extra,
+			}.Build(),
 			EncryptedData: secret.Data,
 			CreatedAt:     proto.Int64(secret.CreatedAt),
 			UpdatedAt:     proto.Int64(secret.UpdatedAt),

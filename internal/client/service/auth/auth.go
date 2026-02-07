@@ -2,12 +2,15 @@ package auth
 
 import (
 	"context"
+	"errors"
 	"log/slog"
 
-	"github.com/ArtShib/gophkeeper/internal/client/models"
+	authgrpc "github.com/ArtShib/gophkeeper/internal/client/grpc"
 	"github.com/ArtShib/gophkeeper/internal/lib/crypto"
+	"github.com/ArtShib/gophkeeper/internal/lib/jwt"
 	"github.com/ArtShib/gophkeeper/internal/lib/loghelper"
-	models2 "github.com/ArtShib/gophkeeper/internal/server/models"
+	"github.com/ArtShib/gophkeeper/internal/models"
+	models2 "github.com/ArtShib/gophkeeper/internal/models"
 )
 
 type StoreUser interface {
@@ -16,49 +19,88 @@ type StoreUser interface {
 }
 
 type Auth struct {
-	log       *slog.Logger
-	store     StoreUser
-	cryptoPwd *crypto.CryptoPassword
+	log             *slog.Logger
+	store           StoreUser
+	cryptoPwdSever  *crypto.CryptoPassword
+	cryptoPwdClient *crypto.CryptoPassword
+	authGRPC        *authgrpc.AuthClient
+	login           string
 }
 
-func New(log *slog.Logger, store StoreUser, cryptoPwd *crypto.CryptoPassword) *Auth {
+func New(log *slog.Logger, store StoreUser, password string, authGRPC *authgrpc.AuthClient, cfg models.ConfigCrypto) *Auth {
+	cryptoPwdSever := crypto.NewCryptoPassword(password, cfg.SaltServer, log)
+	cryptoPwdClient := crypto.NewCryptoPassword(password, cfg.SaltClient, log)
 	return &Auth{
-		log:       log,
-		store:     store,
-		cryptoPwd: cryptoPwd,
+		log:             log,
+		store:           store,
+		cryptoPwdSever:  cryptoPwdSever,
+		cryptoPwdClient: cryptoPwdClient,
+		authGRPC:        authGRPC,
 	}
 }
 
-func (a *Auth) RegisterNewUser(ctx context.Context, id int64, login string) error {
+func (a *Auth) RegisterNewUser(ctx context.Context) error {
 	log := loghelper.New(a.log, "Auth.RegisterNewUser")
-	log.LogDebug(ctx, "register user", slog.String("login", login))
+	log.LogDebug(ctx, "register user", slog.String("login", a.login))
 
-	hashKey, err := a.cryptoPwd.GenerateFromPassword(ctx)
+	hashKeyServer, err := a.cryptoPwdSever.GenerateFromPassword(ctx)
 	if err != nil {
-		return log.LogAndReturnError(ctx, "cryptoPwd.GenerateFromPassword", err)
+		return log.LogAndReturnError(ctx, "cryptoPwdSever.GenerateFromPassword", err)
+	}
+	id, err := a.authGRPC.Register(ctx, a.login, hashKeyServer)
+	if err != nil {
+		return log.LogAndReturnError(ctx, "authGRPC.Register", err)
+	}
+	hashKeyClient, err := a.cryptoPwdClient.GenerateFromPassword(ctx)
+	if err != nil {
+		return log.LogAndReturnError(ctx, "cryptoPwdClient.GenerateFromPassword", err)
 	}
 
-	if err = a.store.AddUser(ctx, id, login, hashKey); err != nil {
+	if err = a.store.AddUser(ctx, id, a.login, hashKeyClient); err != nil {
 		return log.LogAndReturnError(ctx, "store.AddUser", err)
 	}
 
 	return nil
 }
 
-func (a *Auth) Login(ctx context.Context, login string) (*models.User, error) {
+func (a *Auth) Login(ctx context.Context) (*models.User, error) {
 	log := loghelper.New(a.log, "Auth.Login")
+	log.LogDebug(ctx, "login user", slog.String("login", a.login))
 
-	log.LogDebug(ctx, "login user", slog.String("login", login))
-
-	user, err := a.store.GetUser(ctx, login)
+	hashKeyServer, err := a.cryptoPwdSever.GenerateFromPassword(ctx)
 	if err != nil {
+		return nil, log.LogAndReturnError(ctx, "cryptoPwdSever.GenerateFromPassword", err)
+	}
+
+	token, err := a.authGRPC.Login(ctx, a.login, hashKeyServer)
+	if err != nil {
+		return nil, log.LogAndReturnError(ctx, "authGRPC.Register", err)
+	}
+
+	user, err := a.store.GetUser(ctx, a.login)
+	if err != nil {
+		if errors.Is(models.ErrUserNotFound, err) {
+			//return nil, log.LogAndReturnError(ctx, "store.GetUser", err)
+			hashKeyClient, err := a.cryptoPwdClient.GenerateFromPassword(ctx)
+			if err != nil {
+				return nil, log.LogAndReturnError(ctx, "cryptoPwdClient.GenerateFromPassword", err)
+			}
+			id, err := jwt.ParseTokenUserID(token)
+			if err != nil {
+				return nil, log.LogAndReturnError(ctx, "jwt.ParseTokenUserID", err)
+			}
+
+			if err = a.store.AddUser(ctx, id, a.login, hashKeyClient); err != nil {
+				return nil, log.LogAndReturnError(ctx, "store.AddUser", err)
+			}
+		}
 		return nil, log.LogAndReturnError(ctx, "store.GetUser", err)
 	}
-	if err := a.cryptoPwd.CompareHashAndPassword(ctx, user.PasswordHash); err != nil {
+
+	if err := a.cryptoPwdClient.CompareHashAndPassword(ctx, user.PasswordHash); err != nil {
 		return nil, log.LogAndReturnError(ctx, "bcrypt.CompareHashAndPassword", models2.ErrInvalidCredentials)
 	}
-
-	log.LogDebug(ctx, "login success", slog.String("login", login))
-
+	user.Token = token
+	log.LogDebug(ctx, "login success", slog.String("login", a.login))
 	return user, nil
 }

@@ -1,23 +1,5 @@
 package models
 
-import (
-	"errors"
-)
-
-var (
-	ErrUserExists         = errors.New("user already exists")
-	ErrUserNotFound       = errors.New("user not found")
-	ErrInvalidCredentials = errors.New("invalid credentials")
-	ErrLoginOrPassIsEmpty = errors.New("login and password_hash required")
-)
-
-// User структура
-type User struct {
-	ID           int64  `json:"id"`
-	Login        string `json:"login"`
-	PasswordHash []byte `json:"password_hash"`
-}
-
 // SecretType алиас
 type SecretType string
 type SyncStatus string
@@ -33,13 +15,25 @@ const (
 	StatusDeleted   SyncStatus = "deleted"
 )
 
+//// Secret структура секрета old
+//type Secret struct {
+//	ID        string          `json:"id"`
+//	UserID int64      `json:"-"`
+//	Type   SecretType `json:"type"`
+//	Data   []byte     `json:"data"`
+//	Metadata  json.RawMessage `json:"metadata"`
+//	CreatedAt int64           `json:"created_at"`
+//	UpdatedAt int64           `json:"updated_at"`
+//	IsDeleted bool            `json:"is_deleted"`
+//}
+
 // Secret структура секрета
 type Secret struct {
-	ID     string `json:"id"`
-	UserID int64  `json:"-"`
-	//Type      SecretType     `json:"type"`
+	ID        string         `json:"id"`
+	UserID    int64          `json:"-"`
+	Type      SecretType     `json:"type"`
 	Data      []byte         `json:"data"`
-	Metadata  SecretMetadata `json:"metadata"`
+	Metadata  SecretMetadata `json:"metadata"` //json.RawMessage SecretMetadata]
 	CreatedAt int64          `json:"created_at"`
 	UpdatedAt int64          `json:"updated_at"`
 	IsDeleted bool           `json:"is_deleted"`
@@ -54,10 +48,3 @@ type SecretMetadata struct {
 
 // ArraySecret список секретов
 type ArraySecret []Secret
-
-type contextKey string
-
-// contextKey
-const (
-	UserIDKey contextKey = "userID"
-)

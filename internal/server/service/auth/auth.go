@@ -7,22 +7,22 @@ import (
 
 	"github.com/ArtShib/gophkeeper/internal/lib/jwt"
 	"github.com/ArtShib/gophkeeper/internal/lib/loghelper"
-	models2 "github.com/ArtShib/gophkeeper/internal/server/models"
+	"github.com/ArtShib/gophkeeper/internal/models"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type StoreUser interface {
-	AddUser(ctx context.Context, login string, passHash []byte, createdAT int64) (*models2.User, error)
-	GetUser(ctx context.Context, login string) (*models2.User, error)
+	AddUser(ctx context.Context, login string, passHash []byte, createdAT int64) (*models.User, error)
+	GetUser(ctx context.Context, login string) (*models.User, error)
 }
 
 type Auth struct {
 	log    *slog.Logger
 	store  StoreUser
-	config *models2.ConfigJWT
+	config *models.ConfigJWT
 }
 
-func New(log *slog.Logger, store StoreUser, config *models2.ConfigJWT) *Auth {
+func New(log *slog.Logger, store StoreUser, config *models.ConfigJWT) *Auth {
 	return &Auth{
 		log:    log,
 		store:  store,
@@ -59,7 +59,7 @@ func (a *Auth) Login(ctx context.Context, login string, passHash []byte) (string
 	}
 
 	if err := bcrypt.CompareHashAndPassword(user.PasswordHash, passHash); err != nil {
-		return "", log.LogAndReturnError(ctx, "bcrypt.CompareHashAndPassword", models2.ErrInvalidCredentials)
+		return "", log.LogAndReturnError(ctx, "bcrypt.CompareHashAndPassword", models.ErrInvalidCredentials)
 	}
 
 	log.LogDebug(ctx, "login success", slog.String("login", login))

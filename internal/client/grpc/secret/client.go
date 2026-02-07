@@ -4,7 +4,8 @@ import (
 	"context"
 
 	keeperv1 "github.com/ArtShib/gophkeeper/gen/go/keeper/v1"
-	"github.com/ArtShib/gophkeeper/internal/client/models"
+	"github.com/ArtShib/gophkeeper/internal/lib/customprototype"
+	"github.com/ArtShib/gophkeeper/internal/models"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -24,7 +25,7 @@ func (c *Client) CreateSecret(ctx context.Context, secret *models.Secret) error 
 		Secret: keeperv1.Secret_builder{
 			Id: proto.String(secret.ID),
 			Meta: keeperv1.SecretMetadata_builder{
-				Type:  getProtoSecretType(secret.Metadata.Type),
+				Type:  customprototype.getProtoSecretType(secret.Metadata.Type),
 				Name:  proto.String(secret.Metadata.Name),
 				Extra: secret.Metadata.Extra,
 			}.Build(),
@@ -72,7 +73,7 @@ func (c *Client) UpdateSecret(ctx context.Context, secret *models.Secret) error 
 		Secret: keeperv1.Secret_builder{
 			Id: proto.String(secret.ID),
 			Meta: keeperv1.SecretMetadata_builder{
-				Type:  getProtoSecretType(secret.Metadata.Type),
+				Type:  customprototype.getProtoSecretType(secret.Metadata.Type),
 				Name:  proto.String(secret.Metadata.Name),
 				Extra: secret.Metadata.Extra,
 			}.Build(),

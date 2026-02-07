@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ArtShib/gophkeeper/internal/client/models"
+	"github.com/ArtShib/gophkeeper/internal/models"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/pressly/goose/v3"
 )
@@ -291,4 +291,61 @@ func (s *StoreSqlite) GetSecretsToSync(ctx context.Context, userID int64) (model
 	}
 
 	return secrets, nil
+}
+
+func (s *StoreSqlite) ListUserSecrets(ctx context.Context, userID int64) (models.ListSecrets, error) {
+	const op = "storage.sqlite.GetUserSecrets"
+
+	countQuery := `SELECT COUNT(*) FROM secrets WHERE user_id = ?`
+	var count int
+	err := s.db.QueryRowContext(ctx, countQuery, userID).Scan(&count)
+	if err != nil {
+		return nil, fmt.Errorf("count query failed: %w", err)
+	}
+
+	query := `
+			SELECT secret_id, updated_at, status
+       		FROM secrets
+       		WHERE user_id = ?`
+
+	rows, err := s.db.QueryContext(ctx, query, userID)
+
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+
+	defer rows.Close()
+
+	listSecrets := make(map[string]models.Secret, count)
+
+	for rows.Next() {
+		var secret models.Secret
+		var updatedAt sql.NullInt64
+
+		var metadataRaw []byte
+		var typeRaw string
+
+		err := rows.Scan(&secret.ID, &updatedAt, &secret.Status)
+
+		if err != nil {
+			return nil, fmt.Errorf("%s: scan: %w", op, err)
+		}
+
+		if err := json.Unmarshal(metadataRaw, &secret.Metadata); err != nil {
+			return nil, fmt.Errorf("%s: unmarshal metadata: %w", op, err)
+		}
+
+		secret.Metadata.Type = models.SecretType(typeRaw)
+
+		if updatedAt.Valid {
+			secret.UpdatedAt = updatedAt.Int64
+		}
+		listSecrets[secret.ID] = secret
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("%s: rows iter: %w", op, err)
+	}
+
+	return listSecrets, nil
 }
