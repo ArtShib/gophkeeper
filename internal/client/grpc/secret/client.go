@@ -25,7 +25,7 @@ func (c *Client) CreateSecret(ctx context.Context, secret *models.Secret) error 
 		Secret: keeperv1.Secret_builder{
 			Id: proto.String(secret.ID),
 			Meta: keeperv1.SecretMetadata_builder{
-				Type:  customprototype.getProtoSecretType(secret.Metadata.Type),
+				Type:  customprototype.GetProtoSecretType(secret.Metadata.Type),
 				Name:  proto.String(secret.Metadata.Name),
 				Extra: secret.Metadata.Extra,
 			}.Build(),
@@ -73,7 +73,7 @@ func (c *Client) UpdateSecret(ctx context.Context, secret *models.Secret) error 
 		Secret: keeperv1.Secret_builder{
 			Id: proto.String(secret.ID),
 			Meta: keeperv1.SecretMetadata_builder{
-				Type:  customprototype.getProtoSecretType(secret.Metadata.Type),
+				Type:  customprototype.GetProtoSecretType(secret.Metadata.Type),
 				Name:  proto.String(secret.Metadata.Name),
 				Extra: secret.Metadata.Extra,
 			}.Build(),
