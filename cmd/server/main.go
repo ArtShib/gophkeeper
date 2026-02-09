@@ -13,7 +13,7 @@ import (
 	"github.com/ArtShib/gophkeeper/internal/lib/loghelper"
 	"github.com/ArtShib/gophkeeper/internal/server/app"
 	"github.com/ArtShib/gophkeeper/internal/server/config"
-	"github.com/ArtShib/gophkeeper/internal/server/storage"
+	"github.com/ArtShib/gophkeeper/internal/storage/postgres"
 )
 
 var (
@@ -41,13 +41,13 @@ func main() {
 	initStorCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
-	store, err := storage.New(initStorCtx, cfg.ConfigStore.DatabaseDSN)
+	store, err := postgres.New(initStorCtx, cfg.ConfigStore.DatabaseDSN)
 	if err != nil {
 		logHelper.LogError(ctx, "initStor", err)
 		exit.Code(exit.ExitStoreError).Exit()
 	}
 
-	application := app.NewApp(ctx, cfg, store, logger)
+	application := app.NewApp(ctx, cfg, store.DB, logger)
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP, syscall.SIGQUIT)
