@@ -2,38 +2,42 @@ package app
 
 import (
 	"context"
+	"database/sql"
 	"log/slog"
 
 	"github.com/ArtShib/gophkeeper/internal/lib/loghelper"
+	"github.com/ArtShib/gophkeeper/internal/models"
 	"github.com/ArtShib/gophkeeper/internal/server/app/grpc"
 	"github.com/ArtShib/gophkeeper/internal/server/config"
 	"github.com/ArtShib/gophkeeper/internal/server/service/auth"
 	SvcKeeper "github.com/ArtShib/gophkeeper/internal/server/service/keeper"
-	"github.com/ArtShib/gophkeeper/internal/server/storage"
+	"github.com/ArtShib/gophkeeper/internal/storage/secret"
+	"github.com/ArtShib/gophkeeper/internal/storage/user"
 	"golang.org/x/sync/errgroup"
 )
 
 type App struct {
 	Logger     *slog.Logger
-	Store      storage.Storage
+	store      *sql.DB
 	Config     *config.Config
-	ServerGRPC *grpc.App
+	serverGRPC *grpc.App
 }
 
 // NewApp конструктор App
-func NewApp(ctx context.Context, cfg *config.Config, store storage.Storage, log *slog.Logger) *App {
+func NewApp(ctx context.Context, cfg *config.Config, store *sql.DB, log *slog.Logger) *App {
 
 	logHelper := loghelper.New(log, "app.NewApp")
 	logHelper.LogDebug(ctx, "NewApp")
 	app := &App{
 		Config: cfg,
-		Store:  store,
+		store:  store,
 		Logger: log,
 	}
-
-	authSvc := auth.New(app.Logger, app.Store, cfg.ConfigJWT)
-	keeperSvc := SvcKeeper.New(app.Logger, app.Store)
-	app.ServerGRPC = grpc.New(log, cfg.ConfigGRPC.Port, authSvc, keeperSvc)
+	userStorage := user.New(store, models.DriverPostgres)
+	authSvc := auth.New(app.Logger, userStorage, cfg.ConfigJWT)
+	secretStorage := secret.New(store, models.DriverPostgres)
+	keeperSvc := SvcKeeper.New(app.Logger, secretStorage)
+	app.serverGRPC = grpc.New(log, cfg.ConfigGRPC.Port, authSvc, keeperSvc)
 	return app
 }
 
@@ -43,7 +47,7 @@ func (a *App) Run(ctx context.Context) error {
 	gr, ctx := errgroup.WithContext(ctx)
 
 	gr.Go(func() error {
-		return a.ServerGRPC.Start(ctx)
+		return a.serverGRPC.Start(ctx)
 	})
 
 	return gr.Wait()
@@ -53,8 +57,8 @@ func (a *App) Run(ctx context.Context) error {
 func (a *App) Stop(ctx context.Context) error {
 	logHelper := loghelper.New(a.Logger, "app.Stop")
 
-	a.ServerGRPC.Stop(ctx)
-	if err := a.Store.Close(); err != nil {
+	a.serverGRPC.Stop(ctx)
+	if err := a.store.Close(); err != nil {
 		return logHelper.LogAndReturnError(ctx, "failed to stop app gracefully", err)
 	}
 

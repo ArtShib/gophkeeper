@@ -8,12 +8,13 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS secrets (
     secret_id  TEXT PRIMARY KEY,
-    user_id    INTEGER NOT NULL,
+    owner_id   INTEGER NOT NULL,
     type       TEXT NOT NULL,
     data       BLOB NOT NULL,
     metadata   TEXT,
     created_at INTEGER NOT NULL,
     updated_at INTEGER,
+    is_deleted    BOOL DEFAULT FALSE,
     status     TEXT DEFAULT 'new',
     FOREIGN KEY(user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );

@@ -11,13 +11,6 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-type SecretService interface {
-	AddSecret(ctx context.Context, secret *models.Secret) error
-	ListUserSecrets(ctx context.Context, userID int64) (models.ListSecrets, error)
-	MarkSynced(ctx context.Context, secret *models.Secret) error
-	GetSecretsToSync(ctx context.Context, userID int64) (models.ArraySecret, error)
-}
-
 type SecretGRPC interface {
 	CreateSecret(ctx context.Context, secret *models.Secret) error
 	ListSecrets(ctx context.Context, empty *emptypb.Empty) (models.ArraySecret, error)
@@ -83,8 +76,14 @@ func (s *SyncService) pullChanges(ctx context.Context) error {
 					outError = models.ErrSyncPullChanges
 				}
 			} else {
-				if secretOut.UpdatedAt > secretIn.UpdatedAt {
-					if err = s.SecretSvc.MarkSynced(ctx, &secretOut); err != nil {
+				if secretOut.UpdatedAt >= secretIn.UpdatedAt {
+					if secretOut.IsDeleted {
+						if err = s.SecretSvc.DeleteSecret(ctx, &secretOut); err != nil {
+							log.LogError(ctx, "SecretSvc.DeleteSecret", err)
+							outError = models.ErrSyncPullChanges
+						}
+					}
+					if err = s.SecretSvc.UpdateSecret(ctx, &secretOut); err != nil {
 						log.LogError(ctx, "Store.MarkSynced", err, slog.String("secretOut.ID", secretOut.ID))
 						outError = models.ErrSyncPullChanges
 					}
@@ -125,7 +124,7 @@ func (s *SyncService) pushChanges(ctx context.Context) error {
 			isMark = true
 		case models.StatusDeleted:
 			if err = s.SecretGRPC.DeleteSecret(ctx, secretIn.ID, secretIn.UpdatedAt); err != nil {
-				log.LogError(ctx, "SecretGRPC.DeleteSecret", err)
+				log.LogError(ctx, "SecretGRPC.MarkDeleteSecret", err)
 				outError = models.ErrSyncPushChanges
 			}
 			isMark = true

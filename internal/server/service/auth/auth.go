@@ -3,7 +3,6 @@ package auth
 import (
 	"context"
 	"log/slog"
-	"time"
 
 	"github.com/ArtShib/gophkeeper/internal/lib/jwt"
 	"github.com/ArtShib/gophkeeper/internal/lib/loghelper"
@@ -11,18 +10,18 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type StoreUser interface {
-	AddUser(ctx context.Context, login string, passHash []byte, createdAT int64) (*models.User, error)
+type UserStorage[T any] interface {
+	AddUser(ctx context.Context, user *models.User) (int64, error)
 	GetUser(ctx context.Context, login string) (*models.User, error)
 }
 
 type Auth struct {
 	log    *slog.Logger
-	store  StoreUser
+	store  UserStorage[models.User]
 	config *models.ConfigJWT
 }
 
-func New(log *slog.Logger, store StoreUser, config *models.ConfigJWT) *Auth {
+func New(log *slog.Logger, store UserStorage[models.User], config *models.ConfigJWT) *Auth {
 	return &Auth{
 		log:    log,
 		store:  store,
@@ -40,12 +39,17 @@ func (a *Auth) RegisterNewUser(ctx context.Context, login string, passHash []byt
 		return 0, log.LogAndReturnError(ctx, "bcrypt.GenerateFromPassword", err)
 	}
 
-	user, err := a.store.AddUser(ctx, login, passHashSrv, time.Now().Unix())
+	user := &models.User{
+		Login:        login,
+		PasswordHash: passHashSrv,
+	}
+
+	id, err := a.store.AddUser(ctx, user)
 	if err != nil {
 		return 0, log.LogAndReturnError(ctx, "store.AddUser", err)
 	}
 
-	return user.ID, nil
+	return id, nil
 }
 
 func (a *Auth) Login(ctx context.Context, login string, passHash []byte) (string, error) {

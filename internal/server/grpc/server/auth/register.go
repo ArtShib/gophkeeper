@@ -22,7 +22,7 @@ func (s *serverAPI) Register(ctx context.Context, req *keeperv1.RegisterRequest)
 	userID, err := s.service.RegisterNewUser(ctx, login, passHash)
 
 	if err != nil {
-		if errors.Is(err, models.ErrUserExists) {
+		if errors.Is(err, models.ErrAlreadyExists) {
 			return nil, status.Error(codes.AlreadyExists, err.Error())
 		}
 		return nil, status.Error(codes.Internal, "internal server error")

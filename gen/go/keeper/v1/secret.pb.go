@@ -599,11 +599,11 @@ var file_keeper_v1_secret_proto_depIdxs = []int32{
 	1, // 4: keeper.v1.SecretService.CreateSecret:input_type -> keeper.v1.CreateSecretRequest
 	6, // 5: keeper.v1.SecretService.ListSecrets:input_type -> google.protobuf.Empty
 	3, // 6: keeper.v1.SecretService.UpdateSecret:input_type -> keeper.v1.UpdateSecretRequest
-	4, // 7: keeper.v1.SecretService.DeleteSecret:input_type -> keeper.v1.DeleteSecretRequest
+	4, // 7: keeper.v1.SecretService.MarkDeleteSecret:input_type -> keeper.v1.DeleteSecretRequest
 	6, // 8: keeper.v1.SecretService.CreateSecret:output_type -> google.protobuf.Empty
 	2, // 9: keeper.v1.SecretService.ListSecrets:output_type -> keeper.v1.ListSecretsResponse
 	6, // 10: keeper.v1.SecretService.UpdateSecret:output_type -> google.protobuf.Empty
-	6, // 11: keeper.v1.SecretService.DeleteSecret:output_type -> google.protobuf.Empty
+	6, // 11: keeper.v1.SecretService.MarkDeleteSecret:output_type -> google.protobuf.Empty
 	8, // [8:12] is the sub-list for method output_type
 	4, // [4:8] is the sub-list for method input_type
 	4, // [4:4] is the sub-list for extension type_name

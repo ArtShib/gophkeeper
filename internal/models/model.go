@@ -7,9 +7,10 @@ import (
 )
 
 var (
-	ErrUserExists         = errors.New("user already exists")
-	ErrUserNotFound       = errors.New("user not found")
+	ErrAlreadyExists      = errors.New("user already exists")
+	ErrNotFound           = errors.New("not found")
 	ErrInvalidCredentials = errors.New("invalid credentials")
+	ErrInvalidReference   = errors.New("invalid reference")
 	ErrLoginOrPassIsEmpty = errors.New("login and password_hash required")
 	ErrSyncPullChanges    = errors.New("sync svc pull changes")
 	ErrSyncPushChanges    = errors.New("sync svc push changes")
@@ -39,3 +40,12 @@ const (
 )
 
 type ListSecrets map[string]Secret
+
+type DriverType string
+
+const (
+	DriverPostgres DriverType = "postgres"
+	DriverSQLite   DriverType = "sqlite3"
+)
+
+type Sync struct{}
