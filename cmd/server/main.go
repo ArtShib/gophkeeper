@@ -47,7 +47,11 @@ func main() {
 		exit.Code(exit.ExitStoreError).Exit()
 	}
 
-	application := app.NewApp(ctx, cfg, store.DB, logger)
+	application, err := app.NewApp(ctx, cfg, store.DB, logger)
+	if err != nil {
+		logHelper.LogError(ctx, "initApp", err)
+		exit.Code(exit.ExitOtherError).Exit()
+	}
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP, syscall.SIGQUIT)

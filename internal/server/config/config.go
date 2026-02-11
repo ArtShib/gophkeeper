@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"log/slog"
+	"os"
 	"time"
 
 	"github.com/ArtShib/gophkeeper/internal/lib/loghelper"
@@ -17,6 +18,7 @@ type Config struct {
 	ConfigStore *models.ConfigStore
 	ConfigJWT   *models.ConfigJWT
 	ConfigGRPC  *models.ConfigGRPC
+	ConfigTLS   *models.ConfigTLS
 	logger      *slog.Logger
 }
 
@@ -32,6 +34,9 @@ func (c *Config) LoadConfigEnv() error {
 		return err
 	}
 	if err := env.Parse(c.ConfigJWT); err != nil {
+		return err
+	}
+	if err := env.Parse(c.ConfigTLS); err != nil {
 		return err
 	}
 	return nil
@@ -58,6 +63,11 @@ func MustLoadConfig(ctx context.Context, logger *slog.Logger) (*Config, error) {
 		ConfigJWT: &models.ConfigJWT{
 			TokenTTLMIN: time.Minute * 30,
 			SecretKey:   []byte("048ff4ea240a9fdeac8f1422733e9f3b8b0291c969652225e25c5f0f9f8da654139c9e21"),
+		},
+		ConfigTLS: &models.ConfigTLS{
+			Cert: os.Getenv("TLS_CERT"),
+			Key:  os.Getenv("TLS_KEY"),
+			CA:   os.Getenv("TLS_CA"),
 		},
 	}
 

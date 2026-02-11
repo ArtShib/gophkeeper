@@ -23,4 +23,5 @@ type ConfigCrypto struct {
 type ConfigTLS struct {
 	Cert string `env:"TLS_CERT"`
 	Key  string `env:"TLS_KEY"`
+	CA   string `env:"TLS_CA"`
 }

@@ -7,8 +7,8 @@ import (
 	"github.com/ArtShib/gophkeeper/internal/client/grpc/auth"
 	"github.com/ArtShib/gophkeeper/internal/client/grpc/interceptors"
 	"github.com/ArtShib/gophkeeper/internal/lib/loghelper"
+	"github.com/ArtShib/gophkeeper/internal/models"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
@@ -19,11 +19,12 @@ type AuthClient struct {
 	//Token  string
 }
 
-func NewAuthClient(ctx context.Context, addr string, logger *slog.Logger, certPath string) (*AuthClient, error) {
+func NewAuthClient(ctx context.Context, addr string, logger *slog.Logger, tlsConfig *models.ConfigTLS) (*AuthClient, error) {
 	log := loghelper.New(logger, "NewAuthClient")
 	var opts []grpc.DialOption
-	if certPath != "" {
-		creds, err := credentials.NewClientTLSFromFile(certPath, "")
+	if tlsConfig.Cert != "" {
+		//creds, err := credentials.NewClientTLSFromFile(certPath, "localhost")
+		creds, err := LoadMTLSClient(tlsConfig)
 		if err != nil {
 			return nil, log.LogAndReturnError(ctx, "Failed to load TLS credentials", err)
 		}

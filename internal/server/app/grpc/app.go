@@ -7,12 +7,16 @@ import (
 	"net"
 
 	"github.com/ArtShib/gophkeeper/internal/lib/loghelper"
+	"github.com/ArtShib/gophkeeper/internal/models"
+	mygrpc "github.com/ArtShib/gophkeeper/internal/server/grpc"
 	"github.com/ArtShib/gophkeeper/internal/server/grpc/interceptors"
 	authgrpc "github.com/ArtShib/gophkeeper/internal/server/grpc/server/auth"
 	"github.com/ArtShib/gophkeeper/internal/server/grpc/server/secret"
 	"github.com/ArtShib/gophkeeper/internal/server/service/auth"
 	"github.com/ArtShib/gophkeeper/internal/server/service/keeper"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 type App struct {
@@ -21,12 +25,23 @@ type App struct {
 	port       int
 }
 
-func New(logger *slog.Logger, port int, authSvc *auth.Auth, keeperSvc *keeper.Keeper) *App {
+func New(logger *slog.Logger, port int, authSvc *auth.Auth, keeperSvc *keeper.Keeper, config *models.ConfigTLS) (*App, error) {
+	var cred credentials.TransportCredentials
+	var err error
+	if config.Cert != "" && config.Key != "" {
+		cred, err = mygrpc.LoadMTLSServer(config)
+		return nil, err
+	} else {
+		cred = insecure.NewCredentials()
+	}
+
 	gRPCServer := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
 			interceptors.LoggerInterceptor(logger),
+			interceptors.TlsInterceptor(),
 			interceptors.AuthInterceptor(authSvc),
 		),
+		grpc.Creds(cred),
 	)
 	authgrpc.Register(gRPCServer, authSvc)
 	secret.Register(gRPCServer, keeperSvc)
@@ -35,7 +50,7 @@ func New(logger *slog.Logger, port int, authSvc *auth.Auth, keeperSvc *keeper.Ke
 		logger:     logger,
 		port:       port,
 		gRPCServer: gRPCServer,
-	}
+	}, nil
 }
 
 func (a *App) Start(ctx context.Context) error {

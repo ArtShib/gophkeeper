@@ -24,7 +24,8 @@ type App struct {
 }
 
 // NewApp конструктор App
-func NewApp(ctx context.Context, cfg *config.Config, store *sql.DB, log *slog.Logger) *App {
+func NewApp(ctx context.Context, cfg *config.Config, store *sql.DB, log *slog.Logger) (*App, error) {
+	var err error
 
 	logHelper := loghelper.New(log, "app.NewApp")
 	logHelper.LogDebug(ctx, "NewApp")
@@ -37,8 +38,13 @@ func NewApp(ctx context.Context, cfg *config.Config, store *sql.DB, log *slog.Lo
 	authSvc := auth.New(app.Logger, userStorage, cfg.ConfigJWT)
 	secretStorage := secret.New(store, models.DriverPostgres)
 	keeperSvc := SvcKeeper.New(app.Logger, secretStorage)
-	app.serverGRPC = grpc.New(log, cfg.ConfigGRPC.Port, authSvc, keeperSvc)
-	return app
+
+	app.serverGRPC, err = grpc.New(log, cfg.ConfigGRPC.Port, authSvc, keeperSvc, cfg.ConfigTLS)
+	if err != nil {
+		return nil, err
+	}
+
+	return app, nil
 }
 
 // Run закпуск http сервера

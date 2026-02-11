@@ -12,11 +12,6 @@ import (
 	"github.com/ArtShib/gophkeeper/internal/models"
 )
 
-//type StoreUser interface {
-//	AddUser(ctx context.Context, id int64, login string, passHash []byte) error
-//	GetUser(ctx context.Context, login string) (*models.User, error)
-//}
-
 type UserStorage[T any] interface {
 	AddUser(ctx context.Context, user *models.User) (int64, error)
 	GetUser(ctx context.Context, login string) (*models.User, error)
