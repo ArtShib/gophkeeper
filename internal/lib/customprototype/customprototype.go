@@ -22,3 +22,21 @@ func GetProtoSecretType(secretType models.SecretType) *keeperv1.SecretType {
 	}
 	return &protoType
 }
+
+func ProtoToSecretType(protoType keeperv1.SecretType) models.SecretType {
+	var secretType models.SecretType
+
+	switch protoType {
+	case keeperv1.SecretType_SECRET_TYPE_CREDENTIALS:
+		secretType = models.TypeCredentials
+	case keeperv1.SecretType_SECRET_TYPE_BINARY:
+		secretType = models.TypeBinary
+	case keeperv1.SecretType_SECRET_TYPE_CARD:
+		secretType = models.TypeCard
+	case keeperv1.SecretType_SECRET_TYPE_TEXT:
+		secretType = models.TypeText
+	default:
+		secretType = models.TypeUnspecifed
+	}
+	return secretType
+}

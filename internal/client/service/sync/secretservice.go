@@ -12,7 +12,7 @@ import (
 
 type SyncStorage[T any] interface {
 	AddSecret(ctx context.Context, secretID string, userId int64, typeSecret string, data []byte, metadata string, createdAT int64) error
-	DeleteSecret(ctx context.Context, secretID string, userID int64, typeSecret string) error
+	DeleteSecret(ctx context.Context, secretID string, userID int64) error
 	ListUserSecrets(ctx context.Context, userID int64) (models.ListSecrets, error)
 	GetSecretsToSync(ctx context.Context, userID int64) (models.ArraySecret, error)
 	MarkSynced(ctx context.Context, secretID string, ownerID int64, status string) error
@@ -20,12 +20,12 @@ type SyncStorage[T any] interface {
 }
 
 type SecretService struct {
-	store     SyncStorage[models.Secret]
+	store     SyncStorage[models.Sync]
 	logger    *slog.Logger
 	cryptoSvc *crypto.CryptoService
 }
 
-func NewSecretSvc(store SyncStorage[models.Secret], logger *slog.Logger, cryptoSvc *crypto.CryptoService) *SecretService {
+func NewSecretSvc(store SyncStorage[models.Sync], logger *slog.Logger, cryptoSvc *crypto.CryptoService) *SecretService {
 	return &SecretService{store: store, logger: logger, cryptoSvc: cryptoSvc}
 }
 
@@ -56,7 +56,7 @@ func (s *SecretService) AddSecret(ctx context.Context, secret *models.Secret) er
 
 func (s *SecretService) DeleteSecret(ctx context.Context, secret *models.Secret) error {
 	log := loghelper.New(s.logger, "secret.AddSecret")
-	if err := s.store.DeleteSecret(ctx, secret.ID, secret.UserID, string(secret.Type)); err != nil {
+	if err := s.store.DeleteSecret(ctx, secret.ID, secret.UserID); err != nil {
 		return log.LogAndReturnError(ctx, "s.store.DeleteSecret(ctx)", err)
 	}
 	return nil

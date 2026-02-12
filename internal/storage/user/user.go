@@ -43,7 +43,8 @@ func (u *UserStorage) AddUser(ctx context.Context, user *models.User) (int64, er
 		query := `
 				INSERT INTO users (user_id, login, password_hash) 
 				VALUES ($1, $2, $3)
-				ON CONFLICT(user_id) DO NOTHING`
+				ON CONFLICT DO NOTHING
+				RETURNING user_id`
 
 		if err := u.store.DB.QueryRowContext(ctx, query, user.ID, user.Login, user.PasswordHash).Scan(&id); err != nil {
 			return 0, u.store.HandleError(err, op)
@@ -58,8 +59,15 @@ func (u *UserStorage) AddUser(ctx context.Context, user *models.User) (int64, er
 // GetUser select пользователя по логину
 func (u *UserStorage) GetUser(ctx context.Context, login string) (*models.User, error) {
 	const op = "storage.user.GetUser"
-
-	query := `SELECT id, login, pass_hash FROM users WHERE login = $1`
+	var query string
+	switch u.store.Driver {
+	case models.DriverPostgres:
+		query = `SELECT id, login, pass_hash FROM users WHERE login = $1`
+	case models.DriverSQLite:
+		query = `SELECT user_id, login, password_hash FROM users WHERE login = $1`
+	default:
+		return nil, u.store.HandleError(errors.New(op), op)
+	}
 	//query = u.store.DB.Rebind(query) // на случай sqlx
 	row := u.store.DB.QueryRowContext(ctx, query, login)
 

@@ -23,7 +23,7 @@ const (
 	SecretService_CreateSecret_FullMethodName = "/keeper.v1.SecretService/CreateSecret"
 	SecretService_ListSecrets_FullMethodName  = "/keeper.v1.SecretService/ListSecrets"
 	SecretService_UpdateSecret_FullMethodName = "/keeper.v1.SecretService/UpdateSecret"
-	SecretService_DeleteSecret_FullMethodName = "/keeper.v1.SecretService/MarkDeleteSecret"
+	SecretService_DeleteSecret_FullMethodName = "/keeper.v1.SecretService/DeleteSecret"
 )
 
 // SecretServiceClient is the client API for SecretService service.
@@ -112,7 +112,7 @@ func (UnimplementedSecretServiceServer) UpdateSecret(context.Context, *UpdateSec
 	return nil, status.Error(codes.Unimplemented, "method UpdateSecret not implemented")
 }
 func (UnimplementedSecretServiceServer) DeleteSecret(context.Context, *DeleteSecretRequest) (*emptypb.Empty, error) {
-	return nil, status.Error(codes.Unimplemented, "method MarkDeleteSecret not implemented")
+	return nil, status.Error(codes.Unimplemented, "method DeleteSecret not implemented")
 }
 func (UnimplementedSecretServiceServer) mustEmbedUnimplementedSecretServiceServer() {}
 func (UnimplementedSecretServiceServer) testEmbeddedByValue()                       {}
@@ -227,7 +227,7 @@ var SecretService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _SecretService_UpdateSecret_Handler,
 		},
 		{
-			MethodName: "MarkDeleteSecret",
+			MethodName: "DeleteSecret",
 			Handler:    _SecretService_DeleteSecret_Handler,
 		},
 	},

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	keeperv1 "github.com/ArtShib/gophkeeper/gen/go/keeper/v1"
+	"github.com/ArtShib/gophkeeper/internal/lib/customprototype"
 	"github.com/ArtShib/gophkeeper/internal/models"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -29,12 +30,11 @@ func (s *serverAPI) CreateSecret(ctx context.Context, req *keeperv1.CreateSecret
 	//if err != nil {
 	//	return nil, status.Error(codes.InvalidArgument, "invalid metadata")
 	//}
-	secretType := reqSecret.GetMeta().GetType().String()
-
+	//secretType := reqSecret.GetMeta().GetType().String()
 	modelSecret := &models.Secret{
 		ID:     reqSecret.GetId(),
 		UserID: userID,
-		Type:   models.SecretType(secretType),
+		Type:   customprototype.ProtoToSecretType(reqSecret.GetType()),
 		Data:   reqSecret.GetEncryptedData(),
 		Metadata: models.SecretMetadata{
 			Type:  models.SecretType(reqSecret.GetMeta().GetType().String()),

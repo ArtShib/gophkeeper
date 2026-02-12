@@ -40,6 +40,5 @@ func (c *Client) Register(ctx context.Context, login string, passHash []byte) (i
 	if err != nil {
 		return 0, err
 	}
-
 	return resp.GetUserId(), nil
 }

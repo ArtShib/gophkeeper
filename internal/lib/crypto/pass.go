@@ -11,21 +11,21 @@ import (
 )
 
 type CryptoPassword struct {
-	key    []byte
+	Key    []byte
 	logger *slog.Logger
 }
 
 func NewCryptoPassword(pass string, salt []byte, log *slog.Logger) *CryptoPassword {
 	return &CryptoPassword{
-		key:    pbkdf2.Key([]byte(pass), salt, IterCount, KeyLen, sha256.New),
+		Key:    pbkdf2.Key([]byte(pass), salt, IterCount, KeyLen, sha256.New),
 		logger: log,
 	}
 }
 
 func (c *CryptoPassword) GenerateFromPassword(ctx context.Context) ([]byte, error) {
 	log := loghelper.New(c.logger, "crypto.GenerateFromPassword")
+	hashKey, err := bcrypt.GenerateFromPassword(c.Key, bcrypt.DefaultCost)
 
-	hashKey, err := bcrypt.GenerateFromPassword(c.key, bcrypt.DefaultCost)
 	if err != nil {
 		return nil, log.LogAndReturnError(ctx, "bcrypt.GenerateFromPassword", err)
 	}
@@ -34,7 +34,7 @@ func (c *CryptoPassword) GenerateFromPassword(ctx context.Context) ([]byte, erro
 
 func (c *CryptoPassword) CompareHashAndPassword(ctx context.Context, passHash []byte) error {
 	log := loghelper.New(c.logger, "crypto.CompareHashAndPassword")
-	if err := bcrypt.CompareHashAndPassword(passHash, c.key); err != nil {
+	if err := bcrypt.CompareHashAndPassword(passHash, c.Key); err != nil {
 		return log.LogAndReturnError(ctx, "bcrypt.CompareHashAndPassword", err)
 	}
 	return nil

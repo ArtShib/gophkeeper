@@ -60,3 +60,6 @@ func (c *AuthClient) Login(ctx context.Context, login string, passHash []byte) (
 func (c *AuthClient) Register(ctx context.Context, login string, passHash []byte) (int64, error) {
 	return c.api.Register(ctx, login, passHash)
 }
+
+//[87 65 9 232 251 15 212 127 110 172 155 192 88 141 187 72 48 15 188 38 216 109 102 164 170 212 51 93 101 91 251 187]
+//[87 65 9 232 251 15 212 127 110 172 155 192 88 141 187 72 48 15 188 38 216 109 102 164 170 212 51 93 101 91 251 187]

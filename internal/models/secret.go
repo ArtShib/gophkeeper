@@ -9,23 +9,12 @@ const (
 	TypeText        SecretType = "text_data"
 	TypeBinary      SecretType = "binary_data"
 	TypeCard        SecretType = "credit_card"
+	TypeUnspecifed  SecretType = "unspecifed"
 	StatusNew       SyncStatus = "new"
 	StatusModified  SyncStatus = "modified"
 	StatusSynced    SyncStatus = "synced"
 	StatusDeleted   SyncStatus = "deleted"
 )
-
-//// Secret структура секрета old
-//type Secret struct {
-//	ID        string          `json:"id"`
-//	UserID int64      `json:"-"`
-//	Type   SecretType `json:"type"`
-//	Data   []byte     `json:"data"`
-//	Metadata  json.RawMessage `json:"metadata"`
-//	CreatedAt int64           `json:"created_at"`
-//	UpdatedAt int64           `json:"updated_at"`
-//	IsDeleted bool            `json:"is_deleted"`
-//}
 
 // Secret структура секрета
 type Secret struct {

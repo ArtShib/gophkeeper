@@ -1,139 +1,76 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"log"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
+	"github.com/ArtShib/gophkeeper/internal/client/config"
+	mygrpc "github.com/ArtShib/gophkeeper/internal/client/grpc"
 	"github.com/ArtShib/gophkeeper/internal/client/service/auth"
-	"github.com/ArtShib/gophkeeper/internal/client/service/secret"
-	"github.com/ArtShib/gophkeeper/internal/client/service/sync"
 	"github.com/ArtShib/gophkeeper/internal/client/ui"
-	//"github.com/ArtShib/gophkeeper/internal/client/ui/handlers"  // ✅ РАСКОММЕНТИРОВАТЬ!
-
+	"github.com/ArtShib/gophkeeper/internal/lib/exit"
+	mylogger "github.com/ArtShib/gophkeeper/internal/lib/logger"
+	"github.com/ArtShib/gophkeeper/internal/lib/loghelper"
+	"github.com/ArtShib/gophkeeper/internal/models"
+	"github.com/ArtShib/gophkeeper/internal/storage/secret"
+	"github.com/ArtShib/gophkeeper/internal/storage/sqlite"
+	"github.com/ArtShib/gophkeeper/internal/storage/sync"
+	"github.com/ArtShib/gophkeeper/internal/storage/user"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-type app struct {
-	model  *ui.AppModel
-	width  int
-	height int
-}
-
-func initialModel() *app {
-	userSvc := &auth.Auth{}
-	secretSvc := &secret.SecretSvc{}
-	syncSvc := &sync.SyncService{}
-	autoSyncSvc := &sync.AutoSyncService{}
-
-	model := ui.NewAppModel(userSvc, secretSvc, syncSvc, autoSyncSvc)
-	return &app{model: model}
-}
-
-func (a *app) Init() tea.Cmd {
-	return nil
-}
-
-//	func (a *app) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-//		var cmd tea.Cmd
-//
-//		// ✅ Размер окна
-//		if msg, ok := msg.(tea.WindowSizeMsg); ok {
-//			a.width, a.height = msg.Width, msg.Height
-//			return a, nil
-//		}
-//
-//		// ✅ Клавиши → handlers (БЕЗ проверки Quit!)
-//		if msg, ok := msg.(tea.KeyMsg); ok {
-//			cmd = ui.InitHandlers(a.model)(msg.String())
-//		}
-//
-//		return a, cmd // ✅ handlers сами возвращают tea.Quit при необходимости!
-//	}
-func (a *app) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	// ✅ Размер окна
-	if msg, ok := msg.(tea.WindowSizeMsg); ok {
-		a.width, a.height = msg.Width, msg.Height
-		return a, nil
-	}
-
-	// ✅ ВСТРОЕННАЯ НАВИГАЦИЯ - 100% РАБОТАЕТ!
-	if msg, ok := msg.(tea.KeyMsg); ok {
-		switch msg.String() {
-		case "tab", "Tab":
-			// TAB по полям
-			if a.model.ActiveTab == 0 {
-				if a.model.FocusedField < 3 {
-					a.model.FocusedField++
-				}
-			} else {
-				if a.model.FocusedField < 4 {
-					a.model.FocusedField++
-				}
-			}
-
-		case "shift+tab", "Shift+Tab":
-			if a.model.FocusedField > 0 {
-				a.model.FocusedField--
-			}
-
-		case "left", "h":
-			if a.model.ActiveTab > 0 {
-				a.model.ActiveTab--
-				a.model.FocusedField = 0
-			}
-
-		case "right", "l":
-			if a.model.ActiveTab < 1 {
-				a.model.ActiveTab++
-				a.model.FocusedField = 0
-			}
-
-		case "f1", "F1":
-			a.model.ShowPassword = !a.model.ShowPassword
-
-		case "enter", "Enter":
-			if a.model.FocusedField >= 3 {
-				a.model.Loading = true
-				a.model.CurrentScreen = "main"
-			}
-
-		case "q", "Q", "ctrl+c":
-			return a, tea.Quit
-
-		case "esc":
-			a.model.CurrentScreen = "welcome"
-		}
-
-		return a, nil // ✅ ПЕРЕРИСОВКА!
-	}
-
-	return a, nil
-}
-
-func (a *app) View() string {
-	return ui.View(a.model, a.width, a.height)
-}
-
 func main() {
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+
+	var err error
+	logger := mylogger.New()
+	logHelper := loghelper.New(logger, "main")
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	conf := config.MustLoadConfig()
+	store, err := sqlite.New(ctx, conf.ConfigStore.DatabaseDSN)
+
+	if err != nil {
+		logHelper.LogError(ctx, "initStor", err)
+		exit.Code(exit.ExitStoreError).Exit()
+	}
+
+	userStorage := user.New(store.DB, models.DriverSQLite)
+	secretStore := secret.New(store.DB, models.DriverSQLite)
+	syncStore := sync.New(store.DB, models.DriverSQLite)
+
+	grpcAuthClient, err := mygrpc.NewAuthClient(ctx, conf.ConfigGRPC.Server, logger, &models.ConfigTLS{})
+	authService := auth.New(logger, userStorage, grpcAuthClient, conf.ConfigCrypto)
+
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 
 	go func() {
-		<-c
-		fmt.Println("\n👋 Выход...")
-		os.Exit(0)
+		<-sigChan
+		cancel()
 	}()
 
 	p := tea.NewProgram(
-		initialModel(),
+		ui.InitialChoiceModel(ctx, authService, conf, secretStore, syncStore, logger),
 		tea.WithAltScreen(),
 		tea.WithMouseCellMotion(),
 	)
 
-	if _, err := p.Run(); err != nil {
-		log.Fatalf("❌ Ошибка UI: %v", err)
-	}
+	go func() {
+		if _, err := p.Run(); err != nil {
+			fmt.Printf("Ошибка запуска TUI: %v\n", err)
+			cancel()
+		}
+	}()
+
+	<-ctx.Done()
+
+	time.Sleep(100 * time.Millisecond)
+	p.Quit()
+	store.DB.Close()
 }

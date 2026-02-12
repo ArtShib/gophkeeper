@@ -12,7 +12,7 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-func (s *serverAPI) GetUserSecrets(ctx context.Context, empty *emptypb.Empty) (*keeperv1.ListSecretsResponse, error) {
+func (s *serverAPI) ListSecrets(ctx context.Context, empty *emptypb.Empty) (*keeperv1.ListSecretsResponse, error) {
 	userID, err := getUserID(ctx)
 	if err != nil {
 		return nil, status.Error(codes.Unauthenticated, "user not authenticated")
@@ -32,7 +32,8 @@ func (s *serverAPI) GetUserSecrets(ctx context.Context, empty *emptypb.Empty) (*
 		//	return nil, status.Errorf(codes.Internal, "failed to unmarshal meta for secret %s", secret.ID)
 		//}
 		secrets[i] = keeperv1.Secret_builder{
-			Id: proto.String(secret.ID),
+			Id:   proto.String(secret.ID),
+			Type: customprototype.GetProtoSecretType(secret.Type),
 			Meta: keeperv1.SecretMetadata_builder{
 				Type:  customprototype.GetProtoSecretType(secret.Metadata.Type),
 				Name:  proto.String(secret.Metadata.Name),

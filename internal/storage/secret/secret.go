@@ -3,7 +3,9 @@ package secret
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
+	"log"
 
 	"github.com/ArtShib/gophkeeper/internal/models"
 	"github.com/ArtShib/gophkeeper/internal/storage"
@@ -33,11 +35,12 @@ func (s *SecretStore) AddSecret(
 	createdAT int64) error {
 	const op = "storage.postgres.AddSecret"
 	query := `
-			INSERT INTO gophkeeper.data (secret_id, owner_id, type, data, metadata, created_at) 
+			INSERT INTO data (secret_id, owner_id, type, data, metadata, created_at) 
 			VALUES ($1, $2, $3, $4, $5, $6)`
 
 	_, err := s.store.DB.ExecContext(ctx, query, secretID, userId, typeSecret, data, metadata, createdAT)
 	if err != nil {
+		log.Fatal(err)
 		return fmt.Errorf("%s: %w", op, err)
 	}
 
@@ -66,8 +69,8 @@ func (s *SecretStore) GetUserSecrets(ctx context.Context, userID int64) (models.
 	for rows.Next() {
 		var secret models.Secret
 		var updatedAt sql.NullInt64
-
-		err := rows.Scan(&secret.ID, &secret.Type, &secret.Data, &secret.Metadata, &secret.CreatedAt, &updatedAt)
+		var metadata string
+		err := rows.Scan(&secret.ID, &secret.Type, &secret.Data, &metadata, &secret.CreatedAt, &updatedAt)
 
 		if err != nil {
 			return nil, fmt.Errorf("%s: scan: %w", op, err)
@@ -75,6 +78,11 @@ func (s *SecretStore) GetUserSecrets(ctx context.Context, userID int64) (models.
 
 		if updatedAt.Valid {
 			secret.UpdatedAt = updatedAt.Int64
+		}
+		if metadata != "" {
+			if err := json.Unmarshal([]byte(metadata), &secret.Metadata); err != nil {
+				return nil, fmt.Errorf("%s: unmarshal metadata: %w", op, err)
+			}
 		}
 
 		secrets = append(secrets, secret)

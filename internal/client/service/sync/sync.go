@@ -20,10 +20,20 @@ type SecretGRPC interface {
 
 type SyncService struct {
 	logger     *slog.Logger
-	SecretSvc  SecretService
+	SecretSvc  *SecretService
 	SecretGRPC SecretGRPC
 	userId     int64
 	cryptoSvc  *crypto.CryptoService
+}
+
+func NewSyncServic(logger *slog.Logger, SecretSvc *SecretService, SecretGRPC SecretGRPC, userId int64, cryptoSvc *crypto.CryptoService) *SyncService {
+	return &SyncService{
+		logger:     logger,
+		SecretSvc:  SecretSvc,
+		SecretGRPC: SecretGRPC,
+		userId:     userId,
+		cryptoSvc:  cryptoSvc,
+	}
 }
 
 func (s *SyncService) Sync(ctx context.Context) error {

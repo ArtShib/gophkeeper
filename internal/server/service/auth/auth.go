@@ -38,7 +38,6 @@ func (a *Auth) RegisterNewUser(ctx context.Context, login string, passHash []byt
 	if err != nil {
 		return 0, log.LogAndReturnError(ctx, "bcrypt.GenerateFromPassword", err)
 	}
-
 	user := &models.User{
 		Login:        login,
 		PasswordHash: passHashSrv,
@@ -63,7 +62,7 @@ func (a *Auth) Login(ctx context.Context, login string, passHash []byte) (string
 	}
 
 	if err := bcrypt.CompareHashAndPassword(user.PasswordHash, passHash); err != nil {
-		return "", log.LogAndReturnError(ctx, "bcrypt.CompareHashAndPassword", models.ErrInvalidCredentials)
+		return "", log.LogAndReturnError(ctx, "bcrypt.CompareHashAndPassword", err) // models.ErrInvalidCredentials)
 	}
 
 	log.LogDebug(ctx, "login success", slog.String("login", login))

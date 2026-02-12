@@ -20,12 +20,12 @@ func New(conn *grpc.ClientConn) *Client {
 }
 
 func (c *Client) CreateSecret(ctx context.Context, secret *models.Secret) error {
-
 	_, err := c.api.CreateSecret(ctx, keeperv1.CreateSecretRequest_builder{
 		Secret: keeperv1.Secret_builder{
-			Id: proto.String(secret.ID),
+			Id:   proto.String(secret.ID),
+			Type: customprototype.GetProtoSecretType(secret.Type),
 			Meta: keeperv1.SecretMetadata_builder{
-				Type:  customprototype.GetProtoSecretType(secret.Metadata.Type),
+				Type:  customprototype.GetProtoSecretType(secret.Type),
 				Name:  proto.String(secret.Metadata.Name),
 				Extra: secret.Metadata.Extra,
 			}.Build(),
@@ -53,8 +53,9 @@ func (c *Client) ListSecrets(ctx context.Context, empty *emptypb.Empty) (models.
 		secrets[i] = models.Secret{
 			ID:   secret.GetId(),
 			Data: secret.GetEncryptedData(),
+			Type: models.SecretType(secret.GetType().String()),
 			Metadata: models.SecretMetadata{
-				Type:  models.SecretType(secret.GetMeta().GetType().String()),
+				Type:  models.SecretType(secret.GetType().String()),
 				Name:  secret.GetMeta().GetName(),
 				Extra: secret.GetMeta().GetExtra(),
 			},
@@ -71,9 +72,10 @@ func (c *Client) UpdateSecret(ctx context.Context, secret *models.Secret) error 
 
 	_, err := c.api.UpdateSecret(ctx, keeperv1.UpdateSecretRequest_builder{
 		Secret: keeperv1.Secret_builder{
-			Id: proto.String(secret.ID),
+			Id:   proto.String(secret.ID),
+			Type: customprototype.GetProtoSecretType(secret.Type),
 			Meta: keeperv1.SecretMetadata_builder{
-				Type:  customprototype.GetProtoSecretType(secret.Metadata.Type),
+				Type:  customprototype.GetProtoSecretType(secret.Type),
 				Name:  proto.String(secret.Metadata.Name),
 				Extra: secret.Metadata.Extra,
 			}.Build(),

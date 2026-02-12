@@ -12,7 +12,8 @@ type ConfigStore struct {
 }
 
 type ConfigGRPC struct {
-	Port int `env:"PORT"`
+	Port   int    `env:"PORT"`
+	Server string `env:"SERVER"`
 }
 
 type ConfigCrypto struct {

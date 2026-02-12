@@ -22,11 +22,11 @@ type SecretStorage[T any] interface {
 type SecretSvc struct {
 	store     SecretStorage[models.Secret]
 	logger    *slog.Logger
-	cryptoSvc *crypto.CryptoService
+	CryptoSvc *crypto.CryptoService
 }
 
 func New(store SecretStorage[models.Secret], logger *slog.Logger, cryptoSvc *crypto.CryptoService) *SecretSvc {
-	return &SecretSvc{store: store, logger: logger, cryptoSvc: cryptoSvc}
+	return &SecretSvc{store: store, logger: logger, CryptoSvc: cryptoSvc}
 }
 
 func (s *SecretSvc) CreateSecret(
@@ -44,7 +44,7 @@ func (s *SecretSvc) CreateSecret(
 		return nil, log.LogAndReturnError(ctx, "secret create failed", err)
 	}
 
-	encryptData, err := s.cryptoSvc.Encrypt(ctx, data)
+	encryptData, err := s.CryptoSvc.Encrypt(ctx, data)
 	if err != nil {
 		return nil, log.LogAndReturnError(ctx, "secret encrypt failed", err)
 	}
@@ -68,9 +68,9 @@ func (s *SecretSvc) AddSecret(ctx context.Context, secret *models.Secret) error 
 		return log.LogAndReturnError(ctx, "json.Marshal(secret.Metadata)", err)
 	}
 
-	encryptData, err := s.cryptoSvc.Encrypt(ctx, secret.Data)
+	encryptData, err := s.CryptoSvc.Encrypt(ctx, secret.Data)
 	if err != nil {
-		return log.LogAndReturnError(ctx, "s.cryptoSvc.Encrypt(secret.Data)", err)
+		return log.LogAndReturnError(ctx, "s.CryptoSvc.Encrypt(secret.Data)", err)
 	}
 
 	createdAt := time.Now().Unix()
@@ -78,7 +78,7 @@ func (s *SecretSvc) AddSecret(ctx context.Context, secret *models.Secret) error 
 	if err := s.store.AddSecret(
 		ctx, secret.ID,
 		secret.UserID,
-		string(secret.Metadata.Type),
+		string(secret.Type),
 		encryptData, string(metadata),
 		createdAt); err != nil {
 		return log.LogAndReturnError(ctx, "s.store.AddSecret(ctx)", err)
@@ -111,7 +111,7 @@ func (s *SecretSvc) UpdateSecret(ctx context.Context, secret *models.Secret) err
 	if err := s.store.UpdateSecret(
 		ctx, secret.ID,
 		secret.UserID,
-		string(secret.Metadata.Type),
+		string(secret.Type),
 		secret.Data, string(metadata),
 		updatedAT); err != nil {
 		return log.LogAndReturnError(ctx, "s.store.UpdateSecret(ctx)", err)

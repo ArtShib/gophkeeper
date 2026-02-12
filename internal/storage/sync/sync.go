@@ -34,7 +34,7 @@ func (s *SyncStore) AddSecret(
 	createdAT int64) error {
 	const op = "storage.AddSecret"
 	query := `
-			INSERT INTO gophkeeper.data (secret_id, owner_id, type, data, metadata, created_at) 
+			INSERT INTO data (secret_id, owner_id, type, data, metadata, created_at) 
 			VALUES ($1, $2, $3, $4, $5, $6)`
 
 	_, err := s.store.DB.ExecContext(ctx, query, secretID, userId, typeSecret, data, metadata, createdAT)
@@ -47,8 +47,8 @@ func (s *SyncStore) AddSecret(
 func (s *SyncStore) DeleteSecret(ctx context.Context, secretID string, userID int64) error {
 	const op = "storage.deleteSecret"
 	query := `
-			DELETE FROM secrets 
-			WHERE secret_id = $1 AND user_id = $2`
+			DELETE FROM data 
+			WHERE secret_id = $1 AND owner_id = $2`
 
 	_, err := s.store.DB.ExecContext(ctx, query, secretID, userID)
 	if err != nil {
@@ -58,9 +58,9 @@ func (s *SyncStore) DeleteSecret(ctx context.Context, secretID string, userID in
 	return nil
 }
 func (s *SyncStore) ListUserSecrets(ctx context.Context, userID int64) (models.ListSecrets, error) {
-	const op = "storage.GetUserSecrets"
+	const op = "storage.ListUserSecrets"
 
-	countQuery := `SELECT COUNT(*) FROM secrets WHERE user_id = $1`
+	countQuery := `SELECT COUNT(*) FROM data WHERE owner_id = $1`
 	var count int
 	err := s.store.DB.QueryRowContext(ctx, countQuery, userID).Scan(&count)
 	if err != nil {
@@ -69,8 +69,8 @@ func (s *SyncStore) ListUserSecrets(ctx context.Context, userID int64) (models.L
 
 	query := `
 			SELECT secret_id, updated_at, status
-       		FROM secrets
-       		WHERE user_id = $1`
+       		FROM data
+       		WHERE owner_id = $1`
 
 	rows, err := s.store.DB.QueryContext(ctx, query, userID)
 
@@ -86,20 +86,9 @@ func (s *SyncStore) ListUserSecrets(ctx context.Context, userID int64) (models.L
 		var secret models.Secret
 		var updatedAt sql.NullInt64
 
-		var metadataRaw []byte
-		var typeRaw string
-
-		err := rows.Scan(&secret.ID, &updatedAt, &secret.Status)
-
-		if err != nil {
+		if err := rows.Scan(&secret.ID, &updatedAt, &secret.Status); err != nil {
 			return nil, fmt.Errorf("%s: scan: %w", op, err)
 		}
-
-		if err := json.Unmarshal(metadataRaw, &secret.Metadata); err != nil {
-			return nil, fmt.Errorf("%s: unmarshal metadata: %w", op, err)
-		}
-
-		secret.Metadata.Type = models.SecretType(typeRaw)
 
 		if updatedAt.Valid {
 			secret.UpdatedAt = updatedAt.Int64
@@ -114,12 +103,12 @@ func (s *SyncStore) ListUserSecrets(ctx context.Context, userID int64) (models.L
 	return listSecrets, nil
 }
 func (s *SyncStore) GetSecretsToSync(ctx context.Context, userID int64) (models.ArraySecret, error) {
-	const op = "storage.GetUserSecrets"
+	const op = "storage.GetSecretsToSync"
 
 	query := `
 			SELECT secret_id, type, data, metadata, created_at, updated_at, status
-       		FROM secrets
-       		WHERE user_id = $1
+       		FROM data
+       		WHERE owner_id = $1
        			AND status != 'synced'`
 
 	rows, err := s.store.DB.QueryContext(ctx, query, userID)
@@ -135,8 +124,9 @@ func (s *SyncStore) GetSecretsToSync(ctx context.Context, userID int64) (models.
 	for rows.Next() {
 		var secret models.Secret
 		var updatedAt sql.NullInt64
-
-		err := rows.Scan(&secret.ID, &secret.Metadata.Type, &secret.Data, &secret.Metadata, &secret.CreatedAt, &updatedAt, &secret.Status)
+		var metadata string
+		var secretType string
+		err := rows.Scan(&secret.ID, &secretType, &secret.Data, &metadata, &secret.CreatedAt, &updatedAt, &secret.Status)
 
 		if err != nil {
 			return nil, fmt.Errorf("%s: scan: %w", op, err)
@@ -145,6 +135,12 @@ func (s *SyncStore) GetSecretsToSync(ctx context.Context, userID int64) (models.
 		if updatedAt.Valid {
 			secret.UpdatedAt = updatedAt.Int64
 		}
+		if metadata != "" {
+			if err := json.Unmarshal([]byte(metadata), &secret.Metadata); err != nil {
+				return nil, fmt.Errorf("%s: unmarshal metadata: %w", op, err)
+			}
+		}
+		secret.Type = models.SecretType(secretType)
 
 		secrets = append(secrets, secret)
 	}
@@ -158,11 +154,33 @@ func (s *SyncStore) GetSecretsToSync(ctx context.Context, userID int64) (models.
 func (s *SyncStore) MarkSynced(ctx context.Context, secretID string, userID int64, status string) error {
 	const op = "storage.MarkSynced"
 	query := `
-			UPDATE secrets 
+			UPDATE data 
           	SET status = $1 
-			WHERE secret_id = $2 AND user_id = $3`
+			WHERE secret_id = $2 AND owner_id = $3`
 
 	_, err := s.store.DB.ExecContext(ctx, query, status, secretID, userID)
+	if err != nil {
+		return fmt.Errorf("%s: %w", op, err)
+	}
+
+	return nil
+}
+func (s *SyncStore) UpdateSecret(
+	ctx context.Context,
+	secretID string,
+	userID int64,
+	typeSecret string,
+	data []byte,
+	metadata string,
+	updatedAT int64) error {
+	const op = "storage.sync.UpdateSecret"
+
+	query := `
+		  UPDATE data 
+          SET data = $1, metadata = $2, updated_at = $3 
+          WHERE secret_id = $4 AND owner_id = $5 AND type = $6`
+
+	_, err := s.store.DB.ExecContext(ctx, query, data, metadata, updatedAT, secretID, userID, typeSecret)
 	if err != nil {
 		return fmt.Errorf("%s: %w", op, err)
 	}

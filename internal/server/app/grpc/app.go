@@ -38,7 +38,7 @@ func New(logger *slog.Logger, port int, authSvc *auth.Auth, keeperSvc *keeper.Ke
 	gRPCServer := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
 			interceptors.LoggerInterceptor(logger),
-			interceptors.TlsInterceptor(),
+			//interceptors.TlsInterceptor(),
 			interceptors.AuthInterceptor(authSvc),
 		),
 		grpc.Creds(cred),
