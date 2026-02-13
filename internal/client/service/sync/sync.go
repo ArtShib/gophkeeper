@@ -80,6 +80,7 @@ func (s *SyncService) pullChanges(ctx context.Context) error {
 	for _, secretOut := range secretsServer {
 		isMark := false
 		secretOut.UserID = s.userId
+		//secretOut.Type = customprototype.ProtoToSecretType(string(secretOut.Type))
 		secretIn, ok := secretsClient[secretOut.ID]
 		_, err = s.cryptoSvc.Decrypt(ctx, secretOut.Data)
 		if err != nil {

@@ -45,7 +45,7 @@ func (s *SecretService) AddSecret(ctx context.Context, secret *models.Secret) er
 	if err := s.store.AddSecret(
 		ctx, secret.ID,
 		secret.UserID,
-		string(secret.Metadata.Type),
+		string(secret.Type),
 		encryptData, string(metadata),
 		secret.CreatedAt); err != nil {
 		return log.LogAndReturnError(ctx, "s.store.AddSecret(ctx)", err)
