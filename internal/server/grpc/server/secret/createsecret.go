@@ -23,14 +23,6 @@ func (s *serverAPI) CreateSecret(ctx context.Context, req *keeperv1.CreateSecret
 		return nil, status.Error(codes.InvalidArgument, "secret is required")
 	}
 
-	//metadata := reqSecret.GetMeta()
-	//if err := json.Unmarshal(reqSecret.GetMeta(), &metadata); err != nil {}
-	//
-	//metaBytes, err := json.Marshal(reqSecret.GetMeta())
-	//if err != nil {
-	//	return nil, status.Error(codes.InvalidArgument, "invalid metadata")
-	//}
-	//secretType := reqSecret.GetMeta().GetType().String()
 	modelSecret := &models.Secret{
 		ID:     reqSecret.GetId(),
 		UserID: userID,

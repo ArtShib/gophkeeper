@@ -283,7 +283,7 @@ func (m SecretsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "s", "S":
 				m.statusBar = "Синхронизация с сервером..."
 				m.syncService.Sync(m.ctx)
-				return m, nil
+				return InitialSecretsModel(m.ctx, m.user, m.secretService, m.syncService), nil
 
 			case "f", "F":
 				m.secretList.SetFilteringEnabled(!m.secretList.FilteringEnabled())

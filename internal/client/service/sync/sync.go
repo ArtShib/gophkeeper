@@ -40,18 +40,19 @@ func (s *SyncService) Sync(ctx context.Context) error {
 	log := loghelper.New(s.logger, "SyncService")
 	isSync := true
 
-	ctx, cancel := context.WithTimeout(ctx, 2*time.Minute)
+	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
+
+	if err := s.pullChanges(ctx); err != nil {
+		log.LogError(ctx, "pullChanges", err)
+		isSync = false
+	}
 
 	if err := s.pushChanges(ctx); err != nil {
 		log.LogError(ctx, "pushChanges", err)
 		isSync = false
 	}
 
-	if err := s.pullChanges(ctx); err != nil {
-		log.LogError(ctx, "pullChanges", err)
-		isSync = false
-	}
 	if isSync {
 		return nil
 	}
@@ -64,6 +65,9 @@ func (s *SyncService) pullChanges(ctx context.Context) error {
 	var outError error
 
 	secretsServer, err := s.SecretGRPC.ListSecrets(ctx, &emptypb.Empty{})
+	if len(secretsServer) == 0 {
+		return models.ErrNotFound
+	}
 	if err != nil {
 		return log.LogAndReturnError(ctx, "Server.SecretGRPC.ListSecrets", err)
 	}
@@ -74,6 +78,8 @@ func (s *SyncService) pullChanges(ctx context.Context) error {
 	}
 
 	for _, secretOut := range secretsServer {
+		isMark := false
+		secretOut.UserID = s.userId
 		secretIn, ok := secretsClient[secretOut.ID]
 		_, err = s.cryptoSvc.Decrypt(ctx, secretOut.Data)
 		if err != nil {
@@ -85,22 +91,32 @@ func (s *SyncService) pullChanges(ctx context.Context) error {
 					log.LogError(ctx, "SecretSvc.AddSecret", err, slog.String("secretOut.ID", secretOut.ID))
 					outError = models.ErrSyncPullChanges
 				}
+				isMark = true
 			} else {
 				if secretOut.UpdatedAt >= secretIn.UpdatedAt {
+					isMark = true
 					if secretOut.IsDeleted {
 						if err = s.SecretSvc.DeleteSecret(ctx, &secretOut); err != nil {
 							log.LogError(ctx, "SecretSvc.DeleteSecret", err)
 							outError = models.ErrSyncPullChanges
 						}
+						isMark = false
 					}
 					if err = s.SecretSvc.UpdateSecret(ctx, &secretOut); err != nil {
 						log.LogError(ctx, "Store.MarkSynced", err, slog.String("secretOut.ID", secretOut.ID))
 						outError = models.ErrSyncPullChanges
 					}
+
 				} else {
 					log.LogError(ctx, "fail date", models.ErrDateSecretServer, slog.String("secretOut.ID", secretOut.ID))
 					outError = models.ErrSyncPullChanges
 				}
+			}
+		}
+		if isMark {
+			if err = s.SecretSvc.MarkSynced(ctx, &secretIn); err != nil {
+				log.LogError(ctx, "SecretSvc.MarkSynced", err)
+				outError = models.ErrSyncPullChanges
 			}
 		}
 	}
@@ -113,6 +129,9 @@ func (s *SyncService) pushChanges(ctx context.Context) error {
 	var outError error
 
 	secretsClient, err := s.SecretSvc.GetSecretsToSync(ctx, s.userId)
+	if len(secretsClient) == 0 {
+		return models.ErrNotFound
+	}
 	if err != nil {
 		return log.LogAndReturnError(ctx, "Store.GetSecretsToSync", err)
 	}

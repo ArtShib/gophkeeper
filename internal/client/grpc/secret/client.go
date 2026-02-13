@@ -46,14 +46,13 @@ func (c *Client) ListSecrets(ctx context.Context, empty *emptypb.Empty) (models.
 	if err != nil {
 		return nil, err
 	}
-
 	secrets := make(models.ArraySecret, len(listSecrets.GetSecrets()))
 
 	for i, secret := range listSecrets.GetSecrets() {
 		secrets[i] = models.Secret{
 			ID:   secret.GetId(),
 			Data: secret.GetEncryptedData(),
-			Type: models.SecretType(secret.GetType().String()),
+			Type: customprototype.ProtoToSecretType(secret.GetType()), //models.SecretType(secret.GetType().String()),
 			Metadata: models.SecretMetadata{
 				Type:  models.SecretType(secret.GetType().String()),
 				Name:  secret.GetMeta().GetName(),

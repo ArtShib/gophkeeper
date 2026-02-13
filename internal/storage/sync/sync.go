@@ -32,7 +32,7 @@ func (s *SyncStore) AddSecret(
 	data []byte,
 	metadata string,
 	createdAT int64) error {
-	const op = "storage.AddSecret"
+	const op = "storage.sync.AddSecret"
 	query := `
 			INSERT INTO data (secret_id, owner_id, type, data, metadata, created_at) 
 			VALUES ($1, $2, $3, $4, $5, $6)`

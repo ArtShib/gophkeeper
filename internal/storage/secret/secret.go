@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"log"
 
 	"github.com/ArtShib/gophkeeper/internal/models"
 	"github.com/ArtShib/gophkeeper/internal/storage"
@@ -40,7 +39,6 @@ func (s *SecretStore) AddSecret(
 
 	_, err := s.store.DB.ExecContext(ctx, query, secretID, userId, typeSecret, data, metadata, createdAT)
 	if err != nil {
-		log.Fatal(err)
 		return fmt.Errorf("%s: %w", op, err)
 	}
 
