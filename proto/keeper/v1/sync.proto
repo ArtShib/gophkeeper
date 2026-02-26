@@ -1,0 +1,21 @@
+edition = "2023";
+
+package keeper.v1;
+
+option go_package = "github.com/ArtShib/gophkeeper/gen/go/secret/v1;keeperv1";
+
+import "keeper/v1/secret.proto";
+
+service SyncService {
+  rpc Sync(SyncRequest) returns (SyncResponse);
+}
+
+message SyncRequest {
+  int64 last_sync_point = 1;
+  repeated Secret secrets = 2;
+}
+
+message SyncResponse {
+  repeated Secret secrets = 1;
+  int64 server_sync_point = 2;
+}

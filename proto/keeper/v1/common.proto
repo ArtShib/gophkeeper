@@ -1,0 +1,19 @@
+edition = "2023";
+
+package keeper.v1;
+
+option go_package = "github.com/ArtShib/gophkeeper/gen/go/secret/v1;keeperv1";
+
+enum SecretType {
+  SECRET_TYPE_UNSPECIFIED = 0;
+  SECRET_TYPE_CREDENTIALS = 1;
+  SECRET_TYPE_TEXT = 2;
+  SECRET_TYPE_BINARY = 3;
+  SECRET_TYPE_CARD = 4;
+}
+
+message SecretMetadata {
+  SecretType type = 1;
+  string name = 2;
+  map<string, string> extra = 3;
+}
